@@ -1,0 +1,182 @@
+﻿<Window x:Class="GamerBoxPresantationLayer.WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GamerBoxPresantationLayer.WPF"
+        mc:Ignorable="d"
+        Title="GamerBox" Height="960" Width="1280"
+        Background="#0D0D0D"
+        WindowStartupLocation="CenterScreen" WindowStyle="None">
+
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="#0A0A0A" Offset="0"/>
+                <GradientStop Color="#0C0C0C" Offset="0.5"/>
+                <GradientStop Color="#090909" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="24*"/>
+            <RowDefinition Height="375*"/>
+            <RowDefinition Height="809*"/>
+
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260"/>
+            <ColumnDefinition Width="103*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border x:Name="brdTopRight" Background="#121212" Grid.Row="0" Grid.Column="1" MouseDown="brdTopRight_MouseDown">
+            <DockPanel Width="Auto" HorizontalAlignment="Right">
+                <Button Content="" x:Name ="btnStb" Click="btnStbClick" Style="{DynamicResource MiniButtons}"/>
+                <Button Content="" x:Name="btnFullSc" Click="btnFullScClick" Style = "{DynamicResource MiniButtons}"/>
+                <Button Content="" x:Name="btnClose" Click="btnCloseClick" Style = "{DynamicResource MiniButtons}"/>
+
+            </DockPanel>
+        </Border>
+
+        <!-- LEFT NAV BAR -->
+        <Border Background="#121212" Grid.Column="0" Grid.RowSpan="3">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="12*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="1" >
+
+                    <Border x:Name="versionBrd" CornerRadius="10,10,10,10" Height="24" Width="140" Margin="0,40,0,0" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                        <Label Content="0.0.0.1" FontSize="13" HorizontalContentAlignment="Center" Width="50"/>
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Background" Value="#991E2623"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#FF1E2623"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                    </Border>
+
+                </StackPanel>
+
+                <StackPanel Margin="0,10,0,0" VerticalAlignment="Top" Grid.Row="0">
+
+                    <TextBlock Text="🎮 GAMERBOX"
+                           FontSize="32"
+                           FontWeight="Bold"
+                           Foreground="#42BC88"
+                           Margin="0 10 0 40" 
+                           HorizontalAlignment="Center" Width="Auto"/>
+
+                    <StackPanel>
+                        <Button Content="Home" x:Name="btnHome" Click="btnHomeClick"  Style="{DynamicResource MenuButtons}"/>
+                        <Button Content="Reviews" x:Name="btnRvs" Click="btnRvsClick" Style="{DynamicResource MenuButtons}" />
+                        <Button Content="Lists" x:Name="btnlist" Click="btnListClick" Style="{DynamicResource MenuButtons}" HorizontalContentAlignment="Left"/>
+                        <Button Content="Watchlist" x:Name="btnWtList" Click="btnWtListClick" Style="{DynamicResource MenuButtons}"/>
+                        <Button Content="Profile" x:Name="btnProfile" Click="btnProfileClick" Style="{DynamicResource MenuButtons}"/>
+
+                    </StackPanel>
+
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- MAIN CONTENT -->
+        <Grid Grid.Column="1" Grid.RowSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- SEARCH -->
+            <DockPanel Margin="37,18,3,22" Grid.Row="0">
+
+                <!-- Giriş Yap Butonu -->
+                <Button Content="Giriş Yap" DockPanel.Dock="Right" Click="btnSignInCli">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource SignInButton}">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLoggedIn}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <StackPanel x:Name="profilePanel" Orientation="Horizontal" DockPanel.Dock="Right">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLoggedIn}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                    <!-- Avatar -->
+                    <!--
+                    <Border Width="35" Height="35" CornerRadius="50" Margin="0,0,8,0">
+                        <Image Source="{Binding AvatarPath}" Stretch="Fill"/>
+                    </Border>-->
+
+                    <!-- User Name -->
+                    <TextBlock Text="{Binding UserName}"
+               Foreground="#42BC88"
+               VerticalAlignment="Center"
+               FontSize="15"
+               Margin="0,0,5,0" RenderTransformOrigin="0.5,0.5" Width="100">
+                        <TextBlock.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="-1"/>
+                                <SkewTransform/>
+                                <RotateTransform/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </TextBlock.RenderTransform>
+                    </TextBlock>
+
+
+
+                </StackPanel>
+
+                <!-- Profil Menü (Kullanıcı giriş yaptıktan sonra aktif) -->
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLoggedIn}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                    <TextBlock Text="👤 Eren" Foreground="White" FontSize="16" Margin="0,8,10,0"/>
+                    <!--bindinglencek-->
+                    <Button Content="Çıkış" Width="80"/>
+                </StackPanel>
+
+                <!--Search TextBox 
+                <TextBox Width="400" Height="35"
+             Background="#1E1E1E"
+             Foreground="White"
+             BorderBrush="#333"
+             Padding="10"
+             FontSize="14" TextChanged="TextBox_TextChanged_1"/>-->
+            </DockPanel>
+
+
+            <ContentControl x:Name="MainContent" Grid.Row="1"/>
+        </Grid>
+    </Grid>
+
+</Window>

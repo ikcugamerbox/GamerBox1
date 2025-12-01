@@ -1,0 +1,73 @@
+﻿<Window x:Class="GamerBoxPresantationLayer.WPF.SignInWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GamerBoxPresantationLayer.WPF"
+        mc:Ignorable="d"
+        Title="SignInWindow" Height="400" Width="450"  AllowsTransparency="True" Background="Transparent" Foreground="{x:Null}" WindowStyle="None" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Grid>
+        <Canvas>
+            <TextBlock Text="Hesabın yok mu ? Kayıt Ol"
+           Canvas.Left="158"
+           Canvas.Top="297"
+           Foreground="LightBlue"
+           FontSize="14"
+           Cursor="Hand"
+           MouseDown="SignUp_Click"
+             Panel.ZIndex="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+            <Button Foreground="Black" Content="Giriş Yap" Width="150" FontSize="15" FontWeight="Bold" Height="40" Canvas.Left="177" Canvas.Top="261" Panel.ZIndex="1" Click="Button_Click">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="LightSlateGray"
+                    CornerRadius="15" Margin="-58,0,-21,7">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="DarkSlateGray"/>
+                                <Setter Property="Foreground" Value="Wheat"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="DarkSlateGray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Label FontSize="21" FontWeight="Bold" Content="Giriş Yap" Canvas.Left="55" Canvas.Top="88" Panel.ZIndex="3" HorizontalAlignment="Left" VerticalAlignment="Top" Width="109" RenderTransformOrigin="0.835,1.174"/>
+            <Button Content="" x:Name="btnClose" Click="btnCloseClick" Canvas.Left="396" Canvas.Top="71" Panel.ZIndex="99" HorizontalAlignment="Left" Height="22" VerticalAlignment="Top" Width="22" FontFamily="Segoe MDL2 Assets">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="LightSlateGray"
+                                CornerRadius="50">
+                            <ContentPresenter HorizontalAlignment="Center"
+                  VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="DarkSlateGray"/>
+                                <Setter Property="Foreground" Value="Wheat"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="DarkSlateGray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Label FontWeight="SemiBold" Content=" E-Posta" Canvas.Left="47" Canvas.Top="154" Panel.ZIndex="3" HorizontalAlignment="Left" VerticalAlignment="Center" />
+            <Label FontWeight="SemiBold" Content=" Şifre" Canvas.Left="48" Canvas.Top="201" Panel.ZIndex="3" HorizontalAlignment="Left" VerticalAlignment="Center" />
+            <TextBox Canvas.Left="55" Canvas.Top="177" Panel.ZIndex="3" HorizontalAlignment="Left" Height="24" VerticalAlignment="Center" Width="348" Style="{DynamicResource TextboxStyle}"/>
+            <Border Height="278" Width="377" Canvas.Left="42" Canvas.Top="72" Background="DimGray" CornerRadius="35" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Border.Effect>
+                    <DropShadowEffect/>
+                </Border.Effect>
+                <PasswordBox x:Name="txtPass" Height="24"
+              Canvas.Left="60" Canvas.Top="340" Style="{StaticResource PasswordBoxStyle}" Margin="12,152,16,102"/>
+
+
+
+            </Border>
+        </Canvas>
+
+    </Grid>
+</Window>
