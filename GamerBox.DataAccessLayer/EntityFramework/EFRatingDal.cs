@@ -9,8 +9,16 @@ using System.Threading.Tasks;
 
 namespace GamerBox.DataAccessLayer.EntityFramework
 {
-    public class EFRatingDal : GenericRepository<Rating>,IRatingDal
+    public class EFRatingDal : GenericRepository<Rating>, IRatingDal
     {
-    
+        public double GetAverageRatingForGame(int gameId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool HasUserRatedGame(int userId, int gameId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -9,7 +9,21 @@ using System.Threading.Tasks;
 
 namespace GamerBox.DataAccessLayer.EntityFramework
 {
-    public class EFPostDal : GenericRepository<Post>,IPostDal
+    public class EFPostDal : GenericRepository<Post>, IPostDal
     {
+        public List<Post> GetPostsByHashtag(string hashtag)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Post> GetPostsByUser(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Post> GetRecentPosts(int count)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
