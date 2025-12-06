@@ -19,8 +19,4 @@
     <ProjectReference Include="..\GamerBox.EntitiesLayer\GamerBox.EntitiesLayer.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Configurations\" />
-  </ItemGroup>
-
 </Project>

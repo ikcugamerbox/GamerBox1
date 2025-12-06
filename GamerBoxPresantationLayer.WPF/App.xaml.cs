@@ -38,7 +38,7 @@ namespace GamerBoxPresantationLayer.WPF
         private void ConfigureServices(IServiceCollection services)
         {
             // Bağımlılık eşleştirmeleri
-            services.AddTransient<IUserDal, EfUserDal>();
+            services.AddTransient<IUserDal, EFUserDal>();
             services.AddTransient<IUserService, UserManager>();
             services.AddTransient<IGameDal, EFGameDal>();
 

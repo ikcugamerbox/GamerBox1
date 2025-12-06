@@ -16,9 +16,10 @@ namespace GamerBox.DataAccessLayer.Repositories
 
         private readonly DbSet<T> _object;
 
-        public GenericRepository()
+        public GenericRepository(GamerBoxContext context)
         {
             _object = context.Set<T>();
+            this.context = context;
         }
         public void Delete(T entity)
         {
