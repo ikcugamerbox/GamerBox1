@@ -1,24 +1,14 @@
-﻿using GamerBox.BusinessLayer.Abstract;
-using GamerBox.DataAccessLayer.Abstract;
-using GamerBox.EntitiesLayer.Concrete;
-using System;
-using System;
+
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using GamerBox.BusinessLayer.Abstract;
 using GamerBox.DataAccessLayer.Abstract;
 using GamerBox.EntitiesLayer.Concrete;
 
 namespace GamerBox.BusinessLayer.Concrete
 {
-    class GameManager : IGameService
-    public class GameManager : IGameService
-    {
-        private readonly IGameDal _gameDal;
-        private readonly IUserDal _userDal;
-
         public GameManager(IGameDal game)
         public GameManager(IGameDal gameDal, IUserDal userDal)
         {
