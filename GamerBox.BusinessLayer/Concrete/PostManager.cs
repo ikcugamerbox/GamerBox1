@@ -1,10 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿using GamerBox.BusinessLayer.Abstract;
 using GamerBox.BusinessLayer.Abstract;
 using GamerBox.DataAccessLayer.Abstract;
+using GamerBox.DataAccessLayer.Abstract;
 using GamerBox.EntitiesLayer.Concrete;
+using GamerBox.EntitiesLayer.Concrete;
+using System;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Metadata;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace GamerBox.BusinessLayer.Concrete
 {
@@ -18,13 +25,23 @@ namespace GamerBox.BusinessLayer.Concrete
             _postDal = postDal;
         }
 
+        public void TDelete(Post entity)
         public Post CreatePost(int userId, int? gameId, string content)
         {
+            _postDal.Delete(entity);
+        }
+        public List<Post> TGetAll()
+        {
+            return _postDal.GetAll();
+        }
             if (string.IsNullOrWhiteSpace(content))
                 throw new InvalidOperationException("Post cannot be empty .");
             if (content.Length > MaxLength)
                 throw new InvalidOperationException($"Post cannot exceed {MaxLength} characters.");
 
+        public Post TGetById(int id)
+        {
+            return _postDal.GetById(id);
             var hashtags = ExtractHashtags(content);
 
             var post = new Post
@@ -40,12 +57,15 @@ namespace GamerBox.BusinessLayer.Concrete
             return post;
         }
 
+        public void TInsert(Post entity)
         public List<string> ExtractHashtags(string content)
         {
+            _postDal.Insert(entity);
             var matches = Regex.Matches(content, @"#([A-Za-z0-9_]+)");
             return matches.Select(m => m.Groups[1].Value.ToLowerInvariant()).Distinct().ToList();
         }
 
+        public void TUpdate(Post entity)
         public List<Post> GetByUserId(int userId) =>
             _postDal.GetAll().Where(p => p.UserId == userId).ToList();
 
@@ -57,6 +77,11 @@ namespace GamerBox.BusinessLayer.Concrete
 
         public void Update(Post entity)
         {
+            if (entity != null && entity.Id != 0 && entity.Content != "")
+            {//validation
+                _postDal.Update(entity);
+            }
+            else { }
             if (string.IsNullOrWhiteSpace(entity.Content))
                 throw new InvalidOperationException("Post cannot be empty.");
             if (entity.Content.Length > MaxLength)

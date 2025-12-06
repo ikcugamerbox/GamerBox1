@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GamerBox.DataAccessLayer\GamerBox.DataAccessLayer.csproj" />
+    <ProjectReference Include="..\GamerBox.EntitiesLayer\GamerBox.EntitiesLayer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

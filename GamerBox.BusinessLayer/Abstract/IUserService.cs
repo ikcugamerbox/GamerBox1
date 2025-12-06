@@ -1,4 +1,6 @@
+
 ﻿using System.Collections.Generic;
+
 using GamerBox.EntitiesLayer.Concrete;
 
 namespace GamerBox.BusinessLayer.Abstract

@@ -1,38 +1,45 @@
+
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using GamerBox.BusinessLayer.Abstract;
 using GamerBox.DataAccessLayer.Abstract;
 using GamerBox.EntitiesLayer.Concrete;
 
 namespace GamerBox.BusinessLayer.Concrete
 {
-    public class GameManager : IGameService
-    {
-        private readonly IGameDal _gameDal;
-        private readonly IUserDal _userDal;
-
+        public GameManager(IGameDal game)
         public GameManager(IGameDal gameDal, IUserDal userDal)
         {
+            _gameDal = game;
             _gameDal = gameDal;
             _userDal = userDal;
         }
 
+        public void TDelete(Game entity)
         // Oyunları puana göre sıralayıp belli sayıda getirir
         public List<Game> GetByRating(int count)
         {
+            _gameDal.Delete(entity);
+        }
             if (count <= 0)
                 throw new InvalidOperationException("Count must be greater than zero.");
 
+        public List<Game> TGetAll()
+        {
+            return _gameDal.GetAll();
             return _gameDal.GetAll()
                            .OrderByDescending(g => g.Rating)
                            .Take(count)
                            .ToList();
         }
 
+        public Game TGetById(int id)
         // Kullanıcının tercih ettiği kategorilere göre öneri yapar
         public List<Game> RecommendByCategories(int userId, int count)
         {
+            return _gameDal.GetById(id);
             if (count <= 0)
                 throw new InvalidOperationException("Count must be greater than zero.");
 
@@ -51,9 +58,11 @@ namespace GamerBox.BusinessLayer.Concrete
                            .ToList();
         }
 
+        public void TInsert(Game entity)
         // IGenericService<Game> implementasyonları
         public void Add(Game entity)
         {
+            _gameDal.Insert(entity);
             if (entity.Price < 0)
                 throw new InvalidOperationException("Game price cannot be negative.");
             if (string.IsNullOrWhiteSpace(entity.Name))
@@ -62,6 +71,7 @@ namespace GamerBox.BusinessLayer.Concrete
             _gameDal.Add(entity);
         }
 
+        public void TUpdate(Game entity)
         public void Update(Game entity)
         {
             if (entity.Price < 0)

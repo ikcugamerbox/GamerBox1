@@ -154,3 +154,4 @@ namespace GamerBox.BusinessLayer.Concrete
         public List<User> GetAll() => _userDal.GetAll();
     }
 }
+

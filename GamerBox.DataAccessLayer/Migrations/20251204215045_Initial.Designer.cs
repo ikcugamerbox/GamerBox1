@@ -11,9 +11,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GamerBox.DataAccessLayer.Migrations
 {
-    [DbContext(typeof(IUserDal))]
-    [Migration("20251111112157_NewCreate")]
-    partial class NewCreate
+    [DbContext(typeof(GamerBoxContext))]
+    [Migration("20251204215045_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace GamerBox.DataAccessLayer.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("GamerBox.EntitiesLayer.Game", b =>
+            modelBuilder.Entity("GamerBox.EntitiesLayer.Concrete.Game", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,26 +33,35 @@ namespace GamerBox.DataAccessLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<double?>("AverageRating")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Genre")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<DateTime>("ReleaseDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Games");
                 });
 
-            modelBuilder.Entity("GamerBox.EntitiesLayer.Post", b =>
+            modelBuilder.Entity("GamerBox.EntitiesLayer.Concrete.Post", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -62,13 +71,19 @@ namespace GamerBox.DataAccessLayer.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("GameId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Hashtags")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -82,7 +97,7 @@ namespace GamerBox.DataAccessLayer.Migrations
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("GamerBox.EntitiesLayer.Rating", b =>
+            modelBuilder.Entity("GamerBox.EntitiesLayer.Concrete.Rating", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -90,11 +105,11 @@ namespace GamerBox.DataAccessLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("GameId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("RatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Score")
                         .HasColumnType("int");
@@ -111,7 +126,7 @@ namespace GamerBox.DataAccessLayer.Migrations
                     b.ToTable("Ratings");
                 });
 
-            modelBuilder.Entity("GamerBox.EntitiesLayer.User", b =>
+            modelBuilder.Entity("GamerBox.EntitiesLayer.Concrete.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -120,35 +135,66 @@ namespace GamerBox.DataAccessLayer.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Bio")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FavoriteGenres")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("Theme")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ThemePreference")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("GamerBox.EntitiesLayer.Post", b =>
+            modelBuilder.Entity("UserFollowers", b =>
                 {
-                    b.HasOne("GamerBox.EntitiesLayer.Game", "Game")
-                        .WithMany("Posts")
-                        .HasForeignKey("GameId");
+                    b.Property<int>("FollowerId")
+                        .HasColumnType("int");
 
-                    b.HasOne("GamerBox.EntitiesLayer.User", "User")
+                    b.Property<int>("FollowingId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FollowerId", "FollowingId");
+
+                    b.HasIndex("FollowingId");
+
+                    b.ToTable("UserFollowers", (string)null);
+                });
+
+            modelBuilder.Entity("GamerBox.EntitiesLayer.Concrete.Post", b =>
+                {
+                    b.HasOne("GamerBox.EntitiesLayer.Concrete.Game", "Game")
+                        .WithMany("Posts")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("GamerBox.EntitiesLayer.Concrete.User", "User")
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -159,15 +205,15 @@ namespace GamerBox.DataAccessLayer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("GamerBox.EntitiesLayer.Rating", b =>
+            modelBuilder.Entity("GamerBox.EntitiesLayer.Concrete.Rating", b =>
                 {
-                    b.HasOne("GamerBox.EntitiesLayer.Game", "Game")
+                    b.HasOne("GamerBox.EntitiesLayer.Concrete.Game", "Game")
                         .WithMany("Ratings")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GamerBox.EntitiesLayer.User", "User")
+                    b.HasOne("GamerBox.EntitiesLayer.Concrete.User", "User")
                         .WithMany("Ratings")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -178,14 +224,29 @@ namespace GamerBox.DataAccessLayer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("GamerBox.EntitiesLayer.Game", b =>
+            modelBuilder.Entity("UserFollowers", b =>
+                {
+                    b.HasOne("GamerBox.EntitiesLayer.Concrete.User", null)
+                        .WithMany()
+                        .HasForeignKey("FollowerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GamerBox.EntitiesLayer.Concrete.User", null)
+                        .WithMany()
+                        .HasForeignKey("FollowingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GamerBox.EntitiesLayer.Concrete.Game", b =>
                 {
                     b.Navigation("Posts");
 
                     b.Navigation("Ratings");
                 });
 
-            modelBuilder.Entity("GamerBox.EntitiesLayer.User", b =>
+            modelBuilder.Entity("GamerBox.EntitiesLayer.Concrete.User", b =>
                 {
                     b.Navigation("Posts");
 
