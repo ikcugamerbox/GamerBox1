@@ -13,7 +13,10 @@ namespace GamerBox.DataAccessLayer.Abstract
     {
         User GetUserByEmail(string email); 
         List<User> GetFollowers(int userId); 
-        List<User> GetFollowing(int userId); 
-        List<string> GetUserPreferredCategories(int userId); 
+        List<User> GetFollowing(int userId);
+
+        List<string> GetFavoriteGenres(int userId);
+
+
     }
 }

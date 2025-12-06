@@ -10,19 +10,50 @@ namespace GamerBox.DataAccessLayer.EntityFramework
 {
     public class EFGameDal : GenericRepository<Game>, IGameDal
     {
-        public List<Game> GetGamesByCategory(string category)
+        private readonly GamerBoxContext _context;
+
+        public EFGameDal(GamerBoxContext context) : base(context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public List<Game> GetRecommendedGamesForUser(int userId)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public List<Game> GetTopRatedGames(int count)
         {
-            throw new NotImplementedException();
+            return _context.Games
+                .Include(g => g.Ratings)
+                .OrderByDescending(g => g.Ratings.Count)
+                .Take(count)
+                .ToList();
+        }
+
+        
+        public List<Game> GetRecommendedGamesForUser(int userId)
+        {
+            
+            var postedGameIds = _context.Posts
+                .Where(p => p.UserId == userId && p.GameId != null)
+                .Select(p => p.GameId.Value)
+                .ToList();
+
+            
+            var ratedGameIds = _context.Ratings
+                .Where(r => r.UserId == userId)
+                .Select(r => r.GameId)
+                .ToList();
+
+            
+            var interactedGameIds = postedGameIds
+                .Union(ratedGameIds)
+                .ToList();
+
+            
+            return _context.Games
+                .Include(g => g.Ratings)
+                .Where(g => !interactedGameIds.Contains(g.Id))
+                .OrderByDescending(g => g.Ratings.Count)
+                .Take(5)
+                .ToList();
         }
     }
 }

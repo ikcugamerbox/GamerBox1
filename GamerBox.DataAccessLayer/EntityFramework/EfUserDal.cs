@@ -1,34 +1,57 @@
 ﻿using GamerBox.DataAccessLayer.Abstract;
+using GamerBox.DataAccessLayer.Context;
 using GamerBox.DataAccessLayer.Repositories;
 using GamerBox.EntitiesLayer.Concrete;
-using System;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GamerBox.DataAccessLayer.EntityFramework
 {
-    public class EfUserDal : GenericRepository<User>, IUserDal
+    public class EFUserDal : GenericRepository<User>, IUserDal
     {
-        public List<User> GetFollowers(int userId)
+        private readonly GamerBoxContext _context;
+
+        public EFUserDal(GamerBoxContext context) : base(context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public List<User> GetFollowing(int userId)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public User GetUserByEmail(string email)
         {
-            throw new NotImplementedException();
+            return _context.Users
+                .FirstOrDefault(u => u.Email == email);
         }
 
-        public List<string> GetUserPreferredCategories(int userId)
+        
+        public List<User> GetFollowers(int userId)
         {
-            throw new NotImplementedException();
+            return _context.Users
+                .Where(u => u.Following.Any(f => f.Id == userId))
+                .ToList();
+        }
+
+        
+        public List<User> GetFollowing(int userId)
+        {
+            return _context.Users
+                .Where(u => u.Followers.Any(f => f.Id == userId))
+                .ToList();
+        }
+
+        
+        public List<string> GetFavoriteGenres(int userId)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+            if (user == null || string.IsNullOrWhiteSpace(user.FavoriteGenres))
+                return new List<string>();
+
+            return user.FavoriteGenres
+                .Split(',')
+                .Select(g => g.Trim())
+                .ToList();
         }
     }
 }

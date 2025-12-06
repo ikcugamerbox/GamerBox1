@@ -19,12 +19,12 @@ namespace GamerBox.DataAccessLayer.Context
         {
             // SQL Server bağlantı 
             optionsBuilder.UseSqlServer(
-                "Server=EREN\\SQLEXPRESS;Database=GamerBoxDB;Trusted_Connection=True;TrustServerCertificate=True;");
+                "Server=ECEM\\SQLEXPRESS;Database=GamerBoxDB;Trusted_Connection=True;TrustServerCertificate=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // İlişkiler, kısıtlamalar vb. burada tanımlanabilir (şimdilik boş )
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(GamerBoxContext).Assembly);
             base.OnModelCreating(modelBuilder);
         }
     }

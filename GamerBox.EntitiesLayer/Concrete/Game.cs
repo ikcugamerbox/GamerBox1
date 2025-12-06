@@ -14,5 +14,6 @@ namespace GamerBox.EntitiesLayer.Concrete
 
         public ICollection<Rating> Ratings { get; set; }
         public ICollection<Post> Posts { get; set; }
+        
     }
 }

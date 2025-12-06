@@ -10,7 +10,7 @@ namespace GamerBox.DataAccessLayer.Abstract
     public interface IGameDal : IGenericDal<Game>
     {
         List<Game> GetTopRatedGames(int count); 
-        List<Game> GetGamesByCategory(string category); 
+        
         List<Game> GetRecommendedGamesForUser(int userId); 
     }
 }
