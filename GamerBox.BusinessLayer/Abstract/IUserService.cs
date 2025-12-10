@@ -1,7 +1,4 @@
-﻿using GamerBox.EntitiesLayer.Concrete;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -13,6 +10,7 @@ namespace GamerBox.BusinessLayer.Abstract
     {
         void Register(User user, string plainPassword);
         User Login(string userEmail, string password);
+        // giriş başarılıysa user döner , başarısızsa hata .
         void Follow(int followerId, int targetUserId);
         void SetTheme(int userId, string theme);
         void SetPreferredCategories(int userId, List<string> categories);

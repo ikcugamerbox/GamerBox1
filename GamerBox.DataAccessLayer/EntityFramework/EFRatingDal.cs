@@ -15,7 +15,10 @@ namespace GamerBox.DataAccessLayer.EntityFramework
             _context = context;
         }
 
-        
+
+
+
+
         public double GetAverageRatingForGame(int gameId)
         {
             var ratings = _context.Ratings
@@ -28,7 +31,7 @@ namespace GamerBox.DataAccessLayer.EntityFramework
             return ratings.Average(r => r.Score);
         }
 
-        
+
         public bool HasUserRatedGame(int userId, int gameId)
         {
             return _context.Ratings

@@ -8,29 +8,55 @@ using System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace GamerBox.BusinessLayer.Concrete
 {
     public class PostManager : IPostService
     {
-        private readonly IPostDal _postDal;
+        private readonly IPostDal _postDal; //post verilerini databasede yöneten DAL class ı.
         private const int MaxLength = 280;
 
-        public PostManager(IPostDal postDal)
+        public PostManager(IPostDal postDal) //dışarıdan bir IPostDal nesnesi alır. dependency Injection.
         {
             _postDal = postDal;
         }
 
-        public void TDelete(Post entity)
-        public Post CreatePost(int userId, int? gameId, string content)
+        // BASIC CRUD OPERATIONS (IGenericService<Post>)
+
+        public void Add(Post entity)
+        {
+            if (string.IsNullOrWhiteSpace(entity.Content))
+                throw new InvalidOperationException("Post cannot be empty.");
+
+            if (entity.Content.Length > MaxLength)
+                throw new InvalidOperationException($"Post cannot exceed {MaxLength} characters.");
+
+            _postDal.Add(entity); //uygunsa database e ekler.
+        }
+
+        public void Update(Post entity)
+        {
+            if (string.IsNullOrWhiteSpace(entity.Content))
+                throw new InvalidOperationException("Post cannot be empty.");
+
+            if (entity.Content.Length > MaxLength)
+                throw new InvalidOperationException($"Post cannot exceed {MaxLength} characters.");
+
+            _postDal.Update(entity); // uygunsa database de post güncellenir.
+        }
+
+        public void Delete(Post entity)
         {
             _postDal.Delete(entity);
         }
-        public List<Post> TGetAll()
+
+        public Post GetById(int id)
+        {
+            return _postDal.GetById(id);
+        }
+
+        public List<Post> GetAll()
         {
             return _postDal.GetAll();
         }
@@ -39,12 +65,24 @@ namespace GamerBox.BusinessLayer.Concrete
             if (content.Length > MaxLength)
                 throw new InvalidOperationException($"Post cannot exceed {MaxLength} characters.");
 
-        public Post TGetById(int id)
-        {
-            return _postDal.GetById(id);
-            var hashtags = ExtractHashtags(content);
+        public void TInsert(Post entity) => Add(entity); //TInsert çağrıldığında Add çalışır.
+        public void TDelete(Post entity) => Delete(entity);
+        public Post TGetById(int id) => GetById(id);
+        public List<Post> TGetAll() => GetAll();
 
-            var post = new Post
+        // CUSTOM BUSİNESS METHODS 
+        public Post CreatePost(int userId, int? gameId, string content) //Yeni bir post oluşturur. Hashtag analizini otomatik yapar. gameId verilebilir, verilmezse null olur.
+
+        {
+            if (string.IsNullOrWhiteSpace(content))
+                throw new InvalidOperationException("Post cannot be empty.");
+
+            if (content.Length > MaxLength)
+                throw new InvalidOperationException($"Post cannot exceed {MaxLength} characters.");
+
+            var hashtags = ExtractHashtags(content);//hastagleri çıkar.
+
+            var post = new Post //yeni post nesnesi oluştur.
             {
                 UserId = userId,
                 GameId = gameId,
@@ -53,40 +91,32 @@ namespace GamerBox.BusinessLayer.Concrete
                 CreatedAtUtc = DateTime.UtcNow
             };
 
-            _postDal.Add(post);
+            _postDal.Add(post); //database e ekle.
             return post;
         }
 
-        public void TInsert(Post entity)
-        public List<string> ExtractHashtags(string content)
+        public List<string> ExtractHashtags(string content)  //İçerikten tüm hashtagleri çıkarır.
         {
-            _postDal.Insert(entity);
-            var matches = Regex.Matches(content, @"#([A-Za-z0-9_]+)");
-            return matches.Select(m => m.Groups[1].Value.ToLowerInvariant()).Distinct().ToList();
+            var matches = Regex.Matches(content, @"#([A-Za-z0-9_]+)"); // hastagleri bulmak için regex kullanılır.
+
+            return matches  // sadece kelimeleri alır, küçük harfe çevirir, tekrarları kaldırır ve listeler.
+                .Select(m => m.Groups[1].Value.ToLowerInvariant())
+                .Distinct()
+                .ToList();
         }
 
-        public void TUpdate(Post entity)
-        public List<Post> GetByUserId(int userId) =>
-            _postDal.GetAll().Where(p => p.UserId == userId).ToList();
-
-        public List<Post> GetByGameId(int gameId) =>
-            _postDal.GetAll().Where(p => p.GameId == gameId).ToList();
-
-        // IGenericService<Post> implementasyonları
-        public void Add(Post entity) => _postDal.Add(entity);
-
-        public void Update(Post entity)
+        public List<Post> GetByUserId(int userId)  // Belirli kullanıcıya ait postları getirir.
         {
-            if (entity != null && entity.Id != 0 && entity.Content != "")
-            {//validation
-                _postDal.Update(entity);
-            }
-            else { }
-            if (string.IsNullOrWhiteSpace(entity.Content))
-                throw new InvalidOperationException("Post cannot be empty.");
-            if (entity.Content.Length > MaxLength)
-                throw new InvalidOperationException($"Post cannot exceed {MaxLength} characters.");
-            _postDal.Update(entity);
+            return _postDal.GetAll()
+                           .Where(p => p.UserId == userId)
+                           .ToList();
+        }
+
+        public List<Post> GetByGameId(int gameId)    // Belirli oyuna ait tüm postları getirir.
+        {
+            return _postDal.GetAll()
+                           .Where(p => p.GameId == gameId)
+                           .ToList();
         }
 
         public void Delete(Post entity) => _postDal.Delete(entity);
