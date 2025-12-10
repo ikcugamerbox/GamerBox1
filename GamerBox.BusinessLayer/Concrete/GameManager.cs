@@ -2,6 +2,7 @@
 using GamerBox.DataAccessLayer.Abstract;
 using GamerBox.EntitiesLayer.Concrete;
 using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -31,6 +32,8 @@ namespace GamerBox.BusinessLayer.Concrete
 
             _gameDal.Add(entity);// uygunsa database e ekler.
         }
+            if (count <= 0)
+                throw new InvalidOperationException("Count must be greater than zero.");
 
         public void UpdateGame(Game entity)
         {

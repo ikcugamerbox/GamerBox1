@@ -10,6 +10,7 @@ using GamerBox.EntitiesLayer.Concrete;
 namespace GamerBox.BusinessLayer.Abstract
 {
     public interface IRatingService : IGenericService<Rating>
+    public interface IGameService : IGenericService<Game>
     {
         List<Rating> GetByGameId(int gameId);
         //belirli bir oyunun tüm puanlarını getir.

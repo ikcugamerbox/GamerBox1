@@ -1,6 +1,10 @@
 ﻿using GamerBox.BusinessLayer.Abstract;
+using GamerBox.BusinessLayer.Abstract;
+using GamerBox.DataAccessLayer.Abstract;
 using GamerBox.DataAccessLayer.Abstract;
 using GamerBox.EntitiesLayer.Concrete;
+using GamerBox.EntitiesLayer.Concrete;
+using System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,6 +60,10 @@ namespace GamerBox.BusinessLayer.Concrete
         {
             return _postDal.GetAll();
         }
+            if (string.IsNullOrWhiteSpace(content))
+                throw new InvalidOperationException("Post cannot be empty .");
+            if (content.Length > MaxLength)
+                throw new InvalidOperationException($"Post cannot exceed {MaxLength} characters.");
 
         public void TInsert(Post entity) => Add(entity); //TInsert çağrıldığında Add çalışır.
         public void TDelete(Post entity) => Delete(entity);
@@ -110,5 +118,9 @@ namespace GamerBox.BusinessLayer.Concrete
                            .Where(p => p.GameId == gameId)
                            .ToList();
         }
+
+        public void Delete(Post entity) => _postDal.Delete(entity);
+        public Post GetById(int id) => _postDal.GetById(id);
+        public List<Post> GetAll() => _postDal.GetAll();
     }
 }

@@ -1,6 +1,10 @@
 ﻿using GamerBox.BusinessLayer.Abstract;
+using GamerBox.BusinessLayer.Abstract;
+using GamerBox.DataAccessLayer.Abstract;
 using GamerBox.DataAccessLayer.Abstract;
 using GamerBox.EntitiesLayer.Concrete;
+using GamerBox.EntitiesLayer.Concrete;
+using System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +40,8 @@ namespace GamerBox.BusinessLayer.Concrete
 
             _ratingDal.Update(entity);
         }
+            if (score< 1 || score> 5)
+                throw new InvalidOperationException("Score must be between 1 and 5.");
 
         public void Delete(Rating entity)
         {
@@ -111,5 +117,9 @@ namespace GamerBox.BusinessLayer.Concrete
             var ratings = GetByGameId(gameId);// oyuna ait tüm ratingleri alır.
             return ratings.Count == 0 ? 0.0 : ratings.Average(r => r.Score); // rating yoksa 0 döner, varsa average döner .
         }
+
+        public void Delete(Rating entity) => _ratingDal.Delete(entity);
+        public Rating GetById(int id) => _ratingDal.GetById(id);
+        public List<Rating> GetAll() => _ratingDal.GetAll();
     }
 }
