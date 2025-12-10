@@ -17,7 +17,9 @@ namespace GamerBox.DataAccessLayer.EntityFramework
             _context = context;
         }
 
-        
+
+
+
         public List<Post> GetPostsByUser(int userId)
         {
             return _context.Posts
@@ -26,16 +28,17 @@ namespace GamerBox.DataAccessLayer.EntityFramework
                 .ToList();
         }
 
-        
+
         public List<Post> GetPostsByHashtag(string hashtag)
         {
             return _context.Posts
-                .Where(p => EF.Functions.Like(p.Hashtags, $"%#{hashtag}%"))
-                .OrderByDescending(p => p.CreatedAt)
-                .ToList();
+                .Where(p => p.Hashtags.Contains(hashtag)).OrderByDescending(p => p.CreatedAt).ToList();
         }
 
-        
+
+
+
+
         public List<Post> GetRecentPosts(int count)
         {
             return _context.Posts
@@ -43,5 +46,14 @@ namespace GamerBox.DataAccessLayer.EntityFramework
                 .Take(count)
                 .ToList();
         }
+
+        public void Add(Post post)
+        {
+            _context.Posts.Add(post);
+            _context.SaveChanges();
+        }
+
+
+
     }
 }

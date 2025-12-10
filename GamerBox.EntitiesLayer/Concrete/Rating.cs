@@ -12,6 +12,11 @@ namespace GamerBox.EntitiesLayer.Concrete
         public User User { get; set; }
 
         public int GameId { get; set; }
-        public Game Game { get; set; }
+
+        public Game Game { get; set; } = null!;
+
+        public DateTime CreatedAtUtc { get; set; }
+
+
     }
 }

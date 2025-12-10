@@ -12,8 +12,25 @@ namespace GamerBox.EntitiesLayer.Concrete
         public DateTime ReleaseDate { get; set; }
         public string ImageUrl { get; set; }
 
-        public ICollection<Rating> Ratings { get; set; }
-        public ICollection<Post> Posts { get; set; }
-        
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+
+        public int UserId { get; set; }
+
+        public User User { get; set; }
+
+        public ICollection<Rating>? Ratings { get; set; }
+        public ICollection<Post>? Posts { get; set; }
+
+        public double? AverageRating { get; set; }
+
+        public string Category { get; set; }
+
+
+
+
+
+
+
     }
 }
