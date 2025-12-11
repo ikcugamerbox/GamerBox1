@@ -16,10 +16,12 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.Property(x => x.CreatedAt)
                .IsRequired();
 
-        builder.Property(x => x.Hashtags)
-               .HasMaxLength(200);
+        builder.Property(e => e.Hashtags)
+               .HasConversion(
+                 v => string.Join(',', v),          // Veritabanına yazarken birleştir
+                 v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()); // Okurken listeye çevir
 
-        
+
         builder.HasOne(x => x.User)
                .WithMany(x => x.Posts)
                .HasForeignKey(x => x.UserId)
