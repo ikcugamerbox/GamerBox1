@@ -1,45 +1,85 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GamerBox.BusinessLayer.Abstract;
+using GamerBox.EntitiesLayer.Concrete;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace GamerBoxPresantationLayer.WPF
 {
-    /// <summary>
-    /// SignUpWindow.xaml etkileşim mantığı
-    /// </summary>
     public partial class SignUpWindow : Window
     {
-        public SignUpWindow()
+        private readonly IUserService _userService;
+
+        public SignUpWindow(IUserService userService)
         {
             InitializeComponent();
+            _userService = userService;
+        }
+
+        private void Register_Click(object sender, RoutedEventArgs e)
+        {
+            // 1. Validasyon Kontrolleri
+            if (txtPass.Password != txtPassConfirm.Password)
+            {
+                MessageBox.Show("Şifreler uyuşmuyor!", "Hata", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtUsername.Text) || string.IsNullOrWhiteSpace(txtEmail.Text) || string.IsNullOrWhiteSpace(txtPass.Password))
+            {
+                MessageBox.Show("Lütfen tüm zorunlu alanları doldurun.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                // 2. Kullanıcı Nesnesini Oluşturma
+                var user = new User
+                {
+                    Username = txtUsername.Text.Trim(),
+                    Email = txtEmail.Text.Trim(),
+                    Bio = txtName.Text.Trim(), // Entity'de Ad Soyad olmadığı için Bio'ya atadık
+                    ThemePreference = "dark" // Varsayılan tema
+                };
+
+                // 3. Kayıt İşlemi (Business Layer)
+                _userService.Register(user, txtPass.Password);
+
+                MessageBox.Show("Kayıt başarılı! Şimdi giriş yapabilirsiniz.", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // 4. Giriş Ekranına Yönlendirme
+                GoToSignIn();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Kayıt Hatası", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void GoSignIn_Click(object sender, RoutedEventArgs e)
         {
-
-            this.Owner.Show();
-            this.Close();
+            GoToSignIn();
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
-            this.Owner.Owner.Opacity = 1;
+            // Eğer bir ana pencere tarafından açıldıysa onun opaklığını düzelt
+            if (this.Owner != null)
+                this.Owner.Opacity = 1;
         }
 
-        private void Register_Click(object sender, RoutedEventArgs e)
+        // Yardımcı Metot: Giriş Ekranına Dönüş
+        private void GoToSignIn()
         {
+            var signIn = App.ServiceProvider.GetRequiredService<SignInWindow>();
+
+            // Eğer bu pencerenin sahibi varsa (MainWindow), yeni açılan login penceresinin de sahibi yap
+            if (this.Owner != null)
+                signIn.Owner = this.Owner;
+
             this.Close();
+            signIn.ShowDialog();
         }
     }
 }

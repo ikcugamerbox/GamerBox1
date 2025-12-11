@@ -1,11 +1,4 @@
 ﻿using GamerBox.EntitiesLayer.Concrete;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using GamerBox.EntitiesLayer.Concrete;
 
 namespace GamerBox.BusinessLayer.Abstract
 //abstractta interfaceler bulunur.
@@ -22,6 +15,6 @@ namespace GamerBox.BusinessLayer.Abstract
         List<string> ExtractHashtags(string content);
         //paylaşım metnindeki hastagleri bulup liste olarak döner .
 
-        void Add(Post post);
+   
     }
 }

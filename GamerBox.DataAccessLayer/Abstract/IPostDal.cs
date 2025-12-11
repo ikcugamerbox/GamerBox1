@@ -1,10 +1,5 @@
 ﻿using GamerBox.EntitiesLayer.Concrete;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 
 namespace GamerBox.DataAccessLayer.Abstract
 {
@@ -14,7 +9,6 @@ namespace GamerBox.DataAccessLayer.Abstract
         List<Post> GetPostsByHashtag(string hashtag);
         List<Post> GetRecentPosts(int count);
 
-        void Add(Post post);
-
+        // void Add(Post post); -> SİLİNDİ (IGenericDal'dan miras alıyor)
     }
 }

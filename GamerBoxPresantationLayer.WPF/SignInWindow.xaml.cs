@@ -1,53 +1,80 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GamerBox.BusinessLayer.Abstract;
+using GamerBox.EntitiesLayer.Concrete;
+using Microsoft.Extensions.DependencyInjection; // GetRequiredService için gerekli
+using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace GamerBoxPresantationLayer.WPF
 {
-    /// <summary>
-    /// SignInWindow.xaml etkileşim mantığı
-    /// </summary>
     public partial class SignInWindow : Window
     {
-        public SignInWindow()
+        private readonly IUserService _userService;
+
+        // Constructor'da servisi istiyoruz (Dependency Injection)
+        public SignInWindow(IUserService userService)
         {
             InitializeComponent();
-            
-
+            _userService = userService;
         }
 
         private void btnCloseClick(object sender, RoutedEventArgs e)
         {
-            
             this.Close();
-            this.Owner.Opacity = 1;
+            if (this.Owner != null)
+                this.Owner.Opacity = 1;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            // if()
-            // this.Close();
-            // call auth security algo
+            try
+            {
+                string email = txtEmail.Text;
+                string password = txtPass.Password; // PasswordBox'tan şifre alma
+
+                // Business Layer'daki Login metodu çağrılıyor
+                User user = _userService.Login(email, password);
+
+                // Giriş Başarılı!
+                MessageBox.Show($"Hoşgeldin, {user.Username}!", "Giriş Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // Ana pencereye kullanıcı bilgisini gönder
+
+                if (this.Owner is MainWindow mainWindow)
+                {
+                    mainWindow.IsLoggedIn = true;
+                    mainWindow.UserName = user.Username;
+
+                    // BU SATIRI EKLEYİN:
+                    mainWindow.CurrentUser = user;
+
+                    mainWindow.DataContext = null;
+                    mainWindow.DataContext = mainWindow;
+                    mainWindow.Opacity = 1;
+                }
+
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                // Hata mesajı (Şifre yanlış vb.)
+                MessageBox.Show(ex.Message, "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void SignUp_Click(object sender, MouseButtonEventArgs e)
         {
-            SignUpWindow signUp = new SignUpWindow();
-            signUp.Owner = this;
-            this.Hide();
-            signUp.Show();
+            // SignUp penceresini de servisten alıyoruz (O da IUserService kullanacak çünkü)
+            var signUp = App.ServiceProvider.GetRequiredService<SignUpWindow>();
+            signUp.Owner = this.Owner; // Ana pencereyi sahibi yapıyoruz
 
-            
+            this.Close(); // Giriş penceresini kapat
+            signUp.ShowDialog(); // Kayıt penceresini aç
+        }
+
+        private void txtEmail_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+
         }
     }
 }

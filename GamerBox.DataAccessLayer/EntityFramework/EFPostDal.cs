@@ -2,7 +2,6 @@
 using GamerBox.DataAccessLayer.Context;
 using GamerBox.DataAccessLayer.Repositories;
 using GamerBox.EntitiesLayer.Concrete;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,15 +9,9 @@ namespace GamerBox.DataAccessLayer.EntityFramework
 {
     public class EFPostDal : GenericRepository<Post>, IPostDal
     {
-        private readonly GamerBoxContext _context;
-
         public EFPostDal(GamerBoxContext context) : base(context)
         {
-            _context = context;
         }
-
-
-
 
         public List<Post> GetPostsByUser(int userId)
         {
@@ -28,16 +21,15 @@ namespace GamerBox.DataAccessLayer.EntityFramework
                 .ToList();
         }
 
-
         public List<Post> GetPostsByHashtag(string hashtag)
         {
+            // Hashtag arama (Basit string contains veya list check)
+            // Performans için veritabanında normalize etmek daha iyidir ama şimdilik bu yeterli
             return _context.Posts
-                .Where(p => p.Hashtags.Contains(hashtag)).OrderByDescending(p => p.CreatedAt).ToList();
+                .Where(p => p.Hashtags.Contains(hashtag)) // Veritabanı tarafında bu sorgu LINQ ile her zaman düzgün çalışmayabilir, client evaluation gerekebilir.
+                .OrderByDescending(p => p.CreatedAt)
+                .ToList();
         }
-
-
-
-
 
         public List<Post> GetRecentPosts(int count)
         {
@@ -47,13 +39,6 @@ namespace GamerBox.DataAccessLayer.EntityFramework
                 .ToList();
         }
 
-        public void Add(Post post)
-        {
-            _context.Posts.Add(post);
-            _context.SaveChanges();
-        }
-
-
-
+        // Add metodu GenericRepository'den geliyor, tekrar yazmaya gerek yok.
     }
 }

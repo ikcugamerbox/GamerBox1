@@ -10,11 +10,11 @@ namespace GamerBox.DataAccessLayer.EntityFramework
 {
     public class EFGameDal : GenericRepository<Game>, IGameDal
     {
-        private readonly GamerBoxContext _context;
+       
 
         public EFGameDal(GamerBoxContext context) : base(context)
         {
-            _context = context;
+            
         }
 
         public List<Game> GetTopRatedGames(int count)
