@@ -35,25 +35,29 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Margin="10"
-                                Background="#1A1A1A"
-                                CornerRadius="10"
-                                Width="180">
+                        <Border Margin="10" Background="#1A1A1A" CornerRadius="10" Width="180">
                             <StackPanel>
-                                <Image Source="{Binding Poster}"
-                                       Height="260"
-                                       Margin="0 0 0 8"/>
+                                <Image Source="{Binding Poster}" Height="260" Margin="0 0 0 8" Stretch="UniformToFill"/>
 
-                                <TextBlock Text="{Binding Title}"
-                                           Foreground="White"
-                                           FontSize="15"
-                                           FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding Title}" Foreground="White" FontSize="15" FontWeight="SemiBold" Margin="5,0"/>
 
-                                <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal" Margin="5">
                                     <TextBlock Text="{Binding Year}" Foreground="#8A8A8A"/>
-                                    <TextBlock Text="  •  " Foreground="#8A8A8A"/>
+                                    <TextBlock Text=" • " Foreground="#8A8A8A"/>
                                     <TextBlock Text="{Binding Rating}" Foreground="#42BC88"/>
                                 </StackPanel>
+
+                                <Button Content="İncele" Margin="5,0,5,10" Height="25"
+                    Background="#333" Foreground="White" BorderThickness="0"
+                    Tag="{Binding Id}" 
+                    Click="btnReview_Click">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="5"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+
                             </StackPanel>
                         </Border>
                     </DataTemplate>

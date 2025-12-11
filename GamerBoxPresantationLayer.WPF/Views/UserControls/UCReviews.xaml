@@ -3,10 +3,48 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:GamerBoxPresantationLayer.WPF.Views.UserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
+             d:DesignHeight="600" d:DesignWidth="800">
+
+    <Grid Background="#0D0D0D">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Topluluk Akışı" FontSize="24" FontWeight="Bold" Foreground="#42BC88" Margin="20,20,0,15"/>
+
+        <ScrollViewer Grid.Row="1" Margin="10">
+            <ItemsControl ItemsSource="{Binding RecentPosts}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="10,0,10,15" Background="#1A1A1A" CornerRadius="10" Padding="15">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Border Width="40" Height="40" CornerRadius="20" Background="#333" VerticalAlignment="Top">
+                                    <TextBlock Text="👤" Foreground="Gray" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"/>
+                                </Border>
+
+                                <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                    <DockPanel>
+                                        <TextBlock Text="{Binding UserName}" Foreground="#42BC88" FontWeight="Bold" FontSize="14"/>
+                                        <TextBlock Text="{Binding GameName}" Foreground="Gray" FontSize="12" Margin="10,2,0,0" FontStyle="Italic"/>
+                                        <TextBlock Text="{Binding DateStr}" Foreground="#555" DockPanel.Dock="Right" HorizontalAlignment="Right" FontSize="11"/>
+                                    </DockPanel>
+
+                                    <TextBlock Text="{Binding Content}" Foreground="White" Margin="0,5,0,5" TextWrapping="Wrap"/>
+
+                                    <TextBlock Text="{Binding HashtagsStr}" Foreground="#666" FontSize="12"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </UserControl>

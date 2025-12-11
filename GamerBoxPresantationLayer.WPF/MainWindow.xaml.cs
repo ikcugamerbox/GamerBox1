@@ -1,57 +1,86 @@
-﻿using GamerBoxPresantationLayer.WPF.Classes;
+﻿using GamerBox.EntitiesLayer.Concrete;
+using GamerBoxPresantationLayer.WPF.Classes;
 using GamerBoxPresantationLayer.WPF.Views.UserControls;
-using Microsoft.Extensions.DependencyInjection;
-using System.Text;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Media.TextFormatting;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace GamerBoxPresantationLayer.WPF
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    // INotifyPropertyChanged: Arayüzün (UI) değişkenlerdeki değişimi (Giriş yaptı/yaptı) algılamasını sağlar.
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public bool IsLoggedIn { get; set; } = false;
-        public string UserName { get; set; } = "Eren";
-        public string AvatarPath { get; set; } // = "/Assets/avatar.png";
+        private bool _isLoggedIn;
+        private string _userName = "Misafir";
+        private User? _currentUser;
+
+        // --- BINDING ÖZELLİKLERİ ---
+        // Bu özellikler değiştiğinde arayüz otomatik güncellenir.
+
+        public bool IsLoggedIn
+        {
+            get => _isLoggedIn;
+            set { _isLoggedIn = value; OnPropertyChanged(); }
+        }
+
+        public string UserName
+        {
+            get => _userName;
+            set { _userName = value; OnPropertyChanged(); }
+        }
+
+        public User? CurrentUser
+        {
+            get => _currentUser;
+            set { _currentUser = value; }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
+            this.DataContext = this; // Binding işlemleri için bağlamı kendisi yapıyoruz.
+
+            // Uygulama açılışında varsayılan sayfa Home olsun
             MainContent.Content = new UCHome();
-            DataContext = this;
-            // this.MaxWidth = SystemParameters.MaximizedPrimaryScreenWidth;
-            // this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight; //if you want to see bar iin maximized
         }
 
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        // --- PENCERE KONTROLLERİ ---
+
+        // Pencereyi sürükleme
+        private void Header_MouseDown(object sender, MouseButtonEventArgs e)
         {
-
+            // Sadece sol tık ile sürükleme yapılsın
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                this.DragMove();
+            }
         }
-
+        // Kapat
         private void btnCloseClick(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Application.Current.Shutdown();
         }
 
+        // Simge Durumu
         private void btnStbClick(object sender, RoutedEventArgs e)
         {
             this.WindowState = WindowState.Minimized;
         }
 
+        // Tam Ekran / Normal
+        private void btnFullScClick(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = this.WindowState == WindowState.Maximized
+                ? WindowState.Normal
+                : WindowState.Maximized;
+        }
+
+        // --- NAVİGASYON (MENÜ BUTONLARI) ---
+
         private void btnHomeClick(object sender, RoutedEventArgs e)
         {
             MainContent.Content = new UCHome();
-
         }
 
         private void btnRvsClick(object sender, RoutedEventArgs e)
@@ -62,59 +91,60 @@ namespace GamerBoxPresantationLayer.WPF
         private void btnListClick(object sender, RoutedEventArgs e)
         {
             MainContent.Content = new UCLists();
-
         }
 
         private void btnWtListClick(object sender, RoutedEventArgs e)
-        { 
+        {
+            // İsterseniz burada giriş kontrolü yapabilirsiniz
             MainContent.Content = new UCWatchtLists();
-
         }
 
         private void btnProfileClick(object sender, RoutedEventArgs e)
         {
+            if (!IsLoggedIn)
+            {
+                MessageBox.Show("Profilinizi görüntülemek için lütfen giriş yapın.", "Erişim Reddedildi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
             MainContent.Content = new UCProfile();
         }
 
-        private void brdTopRight_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (Mouse.LeftButton == MouseButtonState.Pressed)
-            {
-                this.DragMove();
-            }
-        }
-
-        private void btnFullScClick(object sender, RoutedEventArgs e)
-        {
-            if (this.WindowState == WindowState.Normal)
-            {
-                this.WindowState = WindowState.Maximized;
-            }
-            else { this.WindowState = WindowState.Normal;}
-        }
-
+        // --- GİRİŞ / ÇIKIŞ İŞLEMLERİ ---
 
         private void btnSignInCli(object sender, RoutedEventArgs e)
         {
-            // 1. DI Konteynerinden SignInWindow'u talep et (Otomatik olarak IUserService içine konulur)
-            var signInWindow = App.ServiceProvider.GetRequiredService<SignInWindow>();
+            // SignIn penceresini aç
+            // App.ServiceProvider üzerinden alıyoruz ki bağımlılıkları (UserService) otomatik gelsin.
+            var signInWindow = App.ServiceProvider.GetService(typeof(SignInWindow)) as SignInWindow;
 
-            // 2. Sahipliği ayarla
-            signInWindow.Owner = this;
-
-            // 3. Arka planı karart
-            this.Opacity = 0.4;
-
-            // 4. Pencereyi aç
-            signInWindow.ShowDialog();
-
-            // Not: ShowDialog bittiğinde (pencere kapandığında) kod buradan devam eder.
-            // Opacity düzeltmesini SignInWindow içinde yaptık ama garanti olsun diye buraya da koyabiliriz.
-            this.Opacity = 1;
+            if (signInWindow != null)
+            {
+                signInWindow.Owner = this;
+                this.Opacity = 0.4; // Arka planı biraz karart
+                signInWindow.ShowDialog();
+                // Pencere kapandığında SignInWindow içindeki kodlar bu pencerenin Opacity'sini düzeltecek.
+            }
         }
-        private void TextBox_TextChanged_1(object sender, TextChangedEventArgs e)
-        {
 
+        private void btnSignOut_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Çıkış yapmak istediğinize emin misiniz?", "Çıkış", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                // Bilgileri sıfırla
+                IsLoggedIn = false;
+                CurrentUser = null;
+                UserName = "Misafir";
+
+                // Ana sayfaya yönlendir
+                MainContent.Content = new UCHome();
+            }
+        }
+
+        // --- INotifyPropertyChanged ARAYÜZ GÜNCELLEME ---
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

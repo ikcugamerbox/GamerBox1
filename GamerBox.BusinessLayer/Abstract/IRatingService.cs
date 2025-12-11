@@ -15,7 +15,7 @@ namespace GamerBox.BusinessLayer.Abstract
         // oyunun ortalama puanını hesapla. 
 
         bool HasUserRated(int userId, int gameId);
-        //kullanıcı bu oyuna puan vermiş mi
+       
 
 
 

@@ -39,18 +39,18 @@ namespace GamerBoxPresantationLayer.WPF
                 MessageBox.Show($"Hoşgeldin, {user.Username}!", "Giriş Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 // Ana pencereye kullanıcı bilgisini gönder
+
                 if (this.Owner is MainWindow mainWindow)
                 {
                     mainWindow.IsLoggedIn = true;
                     mainWindow.UserName = user.Username;
-                    // Eğer avatar yolu veritabanında varsa burayı da güncelleyebilirsiniz
-                    // mainWindow.AvatarPath = user.AvatarUrl; 
 
-                    // UI güncellemesi için DataContext'i yenile
+                    // BU SATIRI EKLEYİN:
+                    mainWindow.CurrentUser = user;
+
                     mainWindow.DataContext = null;
                     mainWindow.DataContext = mainWindow;
-
-                    mainWindow.Opacity = 1; // Ana pencereyi tekrar görünür yap
+                    mainWindow.Opacity = 1;
                 }
 
                 this.Close();

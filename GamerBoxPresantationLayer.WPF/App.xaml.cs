@@ -46,7 +46,11 @@ namespace GamerBoxPresantationLayer.WPF
                 try
                 {
                     var context = scope.ServiceProvider.GetRequiredService<GamerBoxContext>();
-                    context.Database.Migrate(); // Veritabanını oluşturur veya günceller
+                    // 1. Veritabanını oluştur/güncelle
+                    context.Database.Migrate();
+
+                    // 2. TEST VERİLERİNİ EKLE (Yeni Eklenen Kısım)
+                    GamerBox.DataAccessLayer.Dataseeds.SeedData.Initialize(context);
                 }
                 catch (System.Exception ex)
                 {
