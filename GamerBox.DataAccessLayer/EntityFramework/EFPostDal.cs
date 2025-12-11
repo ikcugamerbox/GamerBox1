@@ -10,11 +10,11 @@ namespace GamerBox.DataAccessLayer.EntityFramework
 {
     public class EFPostDal : GenericRepository<Post>, IPostDal
     {
-        private readonly GamerBoxContext _context;
+        
 
         public EFPostDal(GamerBoxContext context) : base(context)
         {
-            _context = context;
+            
         }
 
 

@@ -1,5 +1,6 @@
 ﻿using GamerBoxPresantationLayer.WPF.Classes;
 using GamerBoxPresantationLayer.WPF.Views.UserControls;
+using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media.TextFormatting;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GamerBoxPresantationLayer.WPF
 {
@@ -91,24 +93,25 @@ namespace GamerBoxPresantationLayer.WPF
             else { this.WindowState = WindowState.Normal;}
         }
 
-        
+
         private void btnSignInCli(object sender, RoutedEventArgs e)
         {
-            
-            // Buraya giriş başarılı olduğunda olacak şeyleri yazıyorsun
-            SignInWindow Sıgn = new SignInWindow();
-            Sıgn.Owner = this;
-            this.Opacity = 0.2;
+            // 1. DI Konteynerinden SignInWindow'u talep et (Otomatik olarak IUserService içine konulur)
+            var signInWindow = App.ServiceProvider.GetRequiredService<SignInWindow>();
 
-            Sıgn.ShowDialog();
-            //IsLoggedIn = true;
+            // 2. Sahipliği ayarla
+            signInWindow.Owner = this;
 
-            // UI’yi güncelle
-            DataContext = null;
-            DataContext = this;
-           
+            // 3. Arka planı karart
+            this.Opacity = 0.4;
+
+            // 4. Pencereyi aç
+            signInWindow.ShowDialog();
+
+            // Not: ShowDialog bittiğinde (pencere kapandığında) kod buradan devam eder.
+            // Opacity düzeltmesini SignInWindow içinde yaptık ama garanti olsun diye buraya da koyabiliriz.
+            this.Opacity = 1;
         }
-
         private void TextBox_TextChanged_1(object sender, TextChangedEventArgs e)
         {
 

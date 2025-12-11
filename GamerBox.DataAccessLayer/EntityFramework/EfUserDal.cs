@@ -10,11 +10,11 @@ namespace GamerBox.DataAccessLayer.EntityFramework
 {
     public class EFUserDal : GenericRepository<User>, IUserDal
     {
-        private readonly GamerBoxContext _context;
+        
 
         public EFUserDal(GamerBoxContext context) : base(context)
         {
-            _context = context;
+            
         }
 
 

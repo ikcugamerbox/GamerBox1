@@ -1,10 +1,6 @@
 ﻿using GamerBox.BusinessLayer.Abstract;
-using GamerBox.BusinessLayer.Abstract;
-using GamerBox.DataAccessLayer.Abstract;
 using GamerBox.DataAccessLayer.Abstract;
 using GamerBox.EntitiesLayer.Concrete;
-using GamerBox.EntitiesLayer.Concrete;
-using System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,36 +10,26 @@ namespace GamerBox.BusinessLayer.Concrete
 {
     public class PostManager : IPostService
     {
-        private readonly IPostDal _postDal; //post verilerini databasede yöneten DAL class ı.
+        private readonly IPostDal _postDal;
         private const int MaxLength = 280;
 
-        public PostManager(IPostDal postDal) //dışarıdan bir IPostDal nesnesi alır. dependency Injection.
+        public PostManager(IPostDal postDal)
         {
             _postDal = postDal;
         }
 
-        // BASIC CRUD OPERATIONS (IGenericService<Post>)
+        // --- IGenericService İmplementasyonları ---
 
         public void Add(Post entity)
         {
-            if (string.IsNullOrWhiteSpace(entity.Content))
-                throw new InvalidOperationException("Post cannot be empty.");
-
-            if (entity.Content.Length > MaxLength)
-                throw new InvalidOperationException($"Post cannot exceed {MaxLength} characters.");
-
-            _postDal.Add(entity); //uygunsa database e ekler.
+            ValidatePostContent(entity.Content);
+            _postDal.Add(entity);
         }
 
         public void Update(Post entity)
         {
-            if (string.IsNullOrWhiteSpace(entity.Content))
-                throw new InvalidOperationException("Post cannot be empty.");
-
-            if (entity.Content.Length > MaxLength)
-                throw new InvalidOperationException($"Post cannot exceed {MaxLength} characters.");
-
-            _postDal.Update(entity); // uygunsa database de post güncellenir.
+            ValidatePostContent(entity.Content);
+            _postDal.Update(entity);
         }
 
         public void Delete(Post entity)
@@ -60,67 +46,65 @@ namespace GamerBox.BusinessLayer.Concrete
         {
             return _postDal.GetAll();
         }
-            if (string.IsNullOrWhiteSpace(content))
-                throw new InvalidOperationException("Post cannot be empty .");
-            if (content.Length > MaxLength)
-                throw new InvalidOperationException($"Post cannot exceed {MaxLength} characters.");
 
-        public void TInsert(Post entity) => Add(entity); //TInsert çağrıldığında Add çalışır.
-        public void TDelete(Post entity) => Delete(entity);
-        public Post TGetById(int id) => GetById(id);
-        public List<Post> TGetAll() => GetAll();
+        // --- IPostService Özel Metotları ---
 
-        // CUSTOM BUSİNESS METHODS 
-        public Post CreatePost(int userId, int? gameId, string content) //Yeni bir post oluşturur. Hashtag analizini otomatik yapar. gameId verilebilir, verilmezse null olur.
-
+        public Post CreatePost(int userId, int? gameId, string content)
         {
-            if (string.IsNullOrWhiteSpace(content))
-                throw new InvalidOperationException("Post cannot be empty.");
+            ValidatePostContent(content);
 
-            if (content.Length > MaxLength)
-                throw new InvalidOperationException($"Post cannot exceed {MaxLength} characters.");
+            var hashtags = ExtractHashtags(content);
 
-            var hashtags = ExtractHashtags(content);//hastagleri çıkar.
-
-            var post = new Post //yeni post nesnesi oluştur.
+            var post = new Post
             {
                 UserId = userId,
                 GameId = gameId,
                 Content = content.Trim(),
-                Hashtags = hashtags,
-                CreatedAtUtc = DateTime.UtcNow
+                Hashtags = hashtags, // List<string> olarak atanıyor
+                CreatedAt = DateTime.Now, // CreatedAtUtc yerine CreatedAt kullandım (Entity ile uyumlu olsun diye)
+                CreatedAtUtc = DateTime.UtcNow // Entity'de ikisi de varsa ikisini de doldurabiliriz
             };
 
-            _postDal.Add(post); //database e ekle.
+            _postDal.Add(post);
             return post;
         }
 
-        public List<string> ExtractHashtags(string content)  //İçerikten tüm hashtagleri çıkarır.
+        public List<string> ExtractHashtags(string content)
         {
-            var matches = Regex.Matches(content, @"#([A-Za-z0-9_]+)"); // hastagleri bulmak için regex kullanılır.
+            if (string.IsNullOrWhiteSpace(content))
+                return new List<string>();
 
-            return matches  // sadece kelimeleri alır, küçük harfe çevirir, tekrarları kaldırır ve listeler.
+            var matches = Regex.Matches(content, @"#([A-Za-z0-9_]+)");
+
+            return matches
                 .Select(m => m.Groups[1].Value.ToLowerInvariant())
                 .Distinct()
                 .ToList();
         }
 
-        public List<Post> GetByUserId(int userId)  // Belirli kullanıcıya ait postları getirir.
+        public List<Post> GetByUserId(int userId)
         {
-            return _postDal.GetAll()
-                           .Where(p => p.UserId == userId)
-                           .ToList();
+            return _postDal.GetPostsByUser(userId); // DAL'da hazır metot varken onu kullanmak daha performanslıdır
         }
 
-        public List<Post> GetByGameId(int gameId)    // Belirli oyuna ait tüm postları getirir.
+        public List<Post> GetByGameId(int gameId)
         {
+            // DAL'da GetPostsByGameId yoksa GetAll ile filtreleriz, varsa onu kullanırız.
+            // Şimdilik GetAll üzerinden filtreleyelim:
             return _postDal.GetAll()
                            .Where(p => p.GameId == gameId)
                            .ToList();
         }
 
-        public void Delete(Post entity) => _postDal.Delete(entity);
-        public Post GetById(int id) => _postDal.GetById(id);
-        public List<Post> GetAll() => _postDal.GetAll();
+        // --- Yardımcı Metotlar (Private) ---
+
+        private void ValidatePostContent(string content)
+        {
+            if (string.IsNullOrWhiteSpace(content))
+                throw new InvalidOperationException("Post content cannot be empty.");
+
+            if (content.Length > MaxLength)
+                throw new InvalidOperationException($"Post cannot exceed {MaxLength} characters.");
+        }
     }
 }

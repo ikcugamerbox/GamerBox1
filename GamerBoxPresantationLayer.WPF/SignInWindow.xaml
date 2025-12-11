@@ -56,7 +56,7 @@
             </Button>
             <Label FontWeight="SemiBold" Content=" E-Posta" Canvas.Left="47" Canvas.Top="154" Panel.ZIndex="3" HorizontalAlignment="Left" VerticalAlignment="Center" />
             <Label FontWeight="SemiBold" Content=" Şifre" Canvas.Left="48" Canvas.Top="201" Panel.ZIndex="3" HorizontalAlignment="Left" VerticalAlignment="Center" />
-            <TextBox Canvas.Left="55" Canvas.Top="177" Panel.ZIndex="3" HorizontalAlignment="Left" Height="24" VerticalAlignment="Center" Width="348" Style="{DynamicResource TextboxStyle}"/>
+            <TextBox x:Name="txtEmail" Canvas.Left="55" Canvas.Top="177" Panel.ZIndex="3" HorizontalAlignment="Left" Height="24" VerticalAlignment="Center" Width="348" Style="{DynamicResource TextboxStyle}" />
             <Border Height="278" Width="377" Canvas.Left="42" Canvas.Top="72" Background="DimGray" CornerRadius="35" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <Border.Effect>
                     <DropShadowEffect/>

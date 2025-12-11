@@ -8,11 +8,11 @@ namespace GamerBox.DataAccessLayer.EntityFramework
 {
     public class EFRatingDal : GenericRepository<Rating>, IRatingDal
     {
-        private readonly GamerBoxContext _context;
+        
 
         public EFRatingDal(GamerBoxContext context) : base(context)
         {
-            _context = context;
+            
         }
 
 

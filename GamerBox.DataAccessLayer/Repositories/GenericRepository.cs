@@ -12,20 +12,20 @@ namespace GamerBox.DataAccessLayer.Repositories
 {
     public class GenericRepository<T> : IGenericDal<T> where T : class
     {
-        GamerBoxContext context = new GamerBoxContext();
-
+        protected readonly GamerBoxContext _context; // İsimlendirmeyi standart hale getirdim (_context)
         private readonly DbSet<T> _object;
+
 
         public GenericRepository(GamerBoxContext context)
         {
-            _object = context.Set<T>();
-            this.context = context;
+            _context = context;
+            _object = _context.Set<T>();
         }
         public void Delete(T entity)
         {
-            var deletedEntity=context.Entry(entity);
+            var deletedEntity = _context.Entry(entity);
             deletedEntity.State = EntityState.Deleted;
-            context.SaveChanges();
+            _context.SaveChanges();
         }
 
         public List<T> GetAll()
@@ -37,16 +37,21 @@ namespace GamerBox.DataAccessLayer.Repositories
 
         public void Insert(T entity)
         {
-            var addedEntity = context.Entry(entity); 
+            var addedEntity = _context.Entry(entity); 
             addedEntity.State = EntityState.Added;
-            context.SaveChanges();
+            _context.SaveChanges();
 
         }
 
         public void Update(T entity)
         {
-            var updatedEntity = context.Entry(entity);
+            var updatedEntity = _context.Entry(entity);
             updatedEntity.State = EntityState.Modified;
+        }
+
+        public void Add(T entity)
+        {
+            throw new NotImplementedException();
         }
     }
 }
