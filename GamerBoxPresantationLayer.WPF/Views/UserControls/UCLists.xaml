@@ -10,11 +10,12 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </UserControl.Resources>
 
-    <Grid Background="#0D0D0D">
+    <Grid Background="{DynamicResource MainBackgroundBrush}">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="20">
 
-                <TextBlock Text="En Çok Puan Alan Oyunlar 🏆" FontSize="20" FontWeight="Bold" Foreground="#FFD700" Margin="0,0,0,10"/>
+                <TextBlock Text="En Çok Puan Alan Oyunlar 🏆" FontSize="20" FontWeight="Bold" 
+                           Foreground="#FFD700" Margin="0,0,0,10"/>
 
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" Margin="0,0,0,30">
                     <ItemsControl ItemsSource="{Binding TopRatedGames}">
@@ -25,11 +26,14 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border Width="140" Margin="0,0,15,0" Background="#1A1A1A" CornerRadius="8">
+                                <Border Width="140" Margin="0,0,15,0" 
+                                        Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8">
                                     <StackPanel>
                                         <Image Source="/Resources/treasure-chest.png" Height="180" Stretch="UniformToFill"/>
-                                        <TextBlock Text="{Binding Title}" Foreground="White" Margin="5" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
-                                        <TextBlock Text="{Binding RatingStr}" Foreground="#42BC88" Margin="5,0,5,5" FontSize="12"/>
+                                        <TextBlock Text="{Binding Title}" Foreground="{DynamicResource PrimaryTextBrush}" 
+                                                   Margin="5" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding RatingStr}" Foreground="{DynamicResource AccentBrush}" 
+                                                   Margin="5,0,5,5" FontSize="12"/>
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>
@@ -38,7 +42,8 @@
                 </ScrollViewer>
 
 
-                <TextBlock Text="Sizin İçin Önerilenler 🎯" FontSize="20" FontWeight="Bold" Foreground="#42BC88" Margin="0,0,0,10"/>
+                <TextBlock Text="Sizin İçin Önerilenler 🎯" FontSize="20" FontWeight="Bold" 
+                           Foreground="{DynamicResource AccentBrush}" Margin="0,0,0,10"/>
 
                 <ScrollViewer HorizontalScrollBarVisibility="Auto">
                     <ItemsControl ItemsSource="{Binding RecommendedGames}">
@@ -49,11 +54,14 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border Width="140" Margin="0,0,15,0" Background="#1A1A1A" CornerRadius="8">
+                                <Border Width="140" Margin="0,0,15,0" 
+                                        Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8">
                                     <StackPanel>
                                         <Image Source="/Resources/treasure-chest.png" Height="180" Stretch="UniformToFill"/>
-                                        <TextBlock Text="{Binding Title}" Foreground="White" Margin="5" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
-                                        <TextBlock Text="{Binding Genre}" Foreground="Gray" Margin="5,0,5,5" FontSize="12"/>
+                                        <TextBlock Text="{Binding Title}" Foreground="{DynamicResource PrimaryTextBrush}" 
+                                                   Margin="5" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding Genre}" Foreground="{DynamicResource MutedTextBrush}" 
+                                                   Margin="5,0,5,5" FontSize="12"/>
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>
@@ -61,8 +69,8 @@
                     </ItemsControl>
                 </ScrollViewer>
 
-                <TextBlock Text="Öneri almak için giriş yapmalısınız." Foreground="Gray" FontStyle="Italic"
-                           Visibility="{Binding IsGuest, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <TextBlock Text="Öneri almak için giriş yapmalısınız." Foreground="{DynamicResource MutedTextBrush}" 
+                           FontStyle="Italic" Visibility="{Binding IsGuest, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
             </StackPanel>
         </ScrollViewer>

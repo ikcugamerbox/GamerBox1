@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:GamerBoxPresantationLayer.WPF"
         mc:Ignorable="d"
         Title="GamerBox" Height="850" Width="1280"
-        Background="#0D0D0D"
+        Background="{DynamicResource MainBackgroundBrush}" 
         WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="CanResizeWithGrip">
 
     <Window.Resources>
@@ -14,7 +14,7 @@
             <Setter Property="Width" Value="46"/>
             <Setter Property="Height" Value="32"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#BBBBBB"/>
+            <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
             <Setter Property="FontSize" Value="10"/>
@@ -26,8 +26,8 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#333333"/>
-                                <Setter Property="Foreground" Value="White"/>
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource BorderBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -46,20 +46,12 @@
     </Window.Resources>
 
     <Grid>
-        <Grid.Background>
-            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                <GradientStop Color="#0A0A0A" Offset="0"/>
-                <GradientStop Color="#0C0C0C" Offset="0.5"/>
-                <GradientStop Color="#090909" Offset="1"/>
-            </LinearGradientBrush>
-        </Grid.Background>
-
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="260"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Background="#121212" Grid.Column="0" MouseDown="Header_MouseDown">
+        <Border Background="{DynamicResource PanelBackgroundBrush}" Grid.Column="0" MouseDown="Header_MouseDown" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -68,7 +60,7 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel Margin="0,40,0,20" Grid.Row="0">
-                    <TextBlock Text="🎮 GAMERBOX" FontSize="32" FontWeight="Bold" Foreground="#42BC88" 
+                    <TextBlock Text="🎮 GAMERBOX" FontSize="32" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" 
                                HorizontalAlignment="Center" Width="Auto"/>
                 </StackPanel>
 
@@ -84,15 +76,16 @@
                     <Border x:Name="versionBrd" CornerRadius="10" Height="24" Width="140" HorizontalAlignment="Center">
                         <Border.Style>
                             <Style TargetType="Border">
-                                <Setter Property="Background" Value="#991E2623"/>
+                                <Setter Property="Background" Value="{DynamicResource InputBackgroundBrush}"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#FF1E2623"/>
+                                        <Setter Property="Background" Value="{DynamicResource BorderBrush}"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
-                        <Label Content="v1.0.0" Foreground="Gray" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <Label Content="v1.0.0" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" 
+                               HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                     </Border>
                 </StackPanel>
             </Grid>
@@ -105,14 +98,18 @@
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0" Background="Transparent" MouseDown="Header_MouseDown">
-
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,10,0">
 
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,0">
+                    <Button x:Name="btnThemeToggle" Click="btnThemeToggle_Click" 
+                            Content="🌓" ToolTip="Temayı Değiştir"
+                            Width="32" Height="32" Margin="0,0,10,0"
+                            Background="Transparent" BorderThickness="0" FontSize="16" Foreground="{DynamicResource PrimaryTextBrush}"/>
 
-                        <Button Content="Giriş Yap" Click="btnSignInCli" Height="28" Width="100" FontSize="13" FontWeight="SemiBold">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,0">
+                        <Button Content="Giriş Yap" Click="btnSignInCli" Height="28" Width="100" 
+                                Background="{DynamicResource AccentBrush}" Foreground="White" BorderThickness="0" FontWeight="SemiBold">
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource SignInButton}">
+                                <Style TargetType="Button">
                                     <Setter Property="Visibility" Value="Visible"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsLoggedIn}" Value="True">
@@ -135,17 +132,11 @@
                                 </Style>
                             </StackPanel.Style>
 
-                            <TextBlock Text="{Binding UserName}" Foreground="#42BC88" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBlock Text="{Binding UserName}" Foreground="{DynamicResource AccentBrush}" FontSize="14" 
+                                       FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,10,0"/>
 
-                            <Button Content="Çıkış" Click="btnSignOut_Click" Width="50" Height="24" FontSize="11" Background="#333" Foreground="White" BorderThickness="0">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="#333" CornerRadius="4">
-                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
+                            <Button Content="Çıkış" Click="btnSignOut_Click" Width="50" Height="24" FontSize="11" 
+                                    Background="{DynamicResource BorderBrush}" Foreground="{DynamicResource PrimaryTextBrush}" BorderThickness="0"/>
                         </StackPanel>
                     </StackPanel>
 

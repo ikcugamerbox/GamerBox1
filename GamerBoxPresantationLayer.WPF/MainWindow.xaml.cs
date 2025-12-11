@@ -146,5 +146,9 @@ namespace GamerBoxPresantationLayer.WPF
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
+        private void btnThemeToggle_Click(object sender, RoutedEventArgs e)
+        {
+            Classes.ThemeHelper.ToggleTheme();
+        }
     }
 }
