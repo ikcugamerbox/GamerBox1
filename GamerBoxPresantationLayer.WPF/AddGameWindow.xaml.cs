@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32; // FileDialog için
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -40,8 +41,8 @@ namespace GamerBoxPresantationLayer.WPF
                 _selectedImagePath = op.FileName;
             }
         }
-
-        private void btnSave_Click(object sender, RoutedEventArgs e)
+        
+        private async void btnSave_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -81,7 +82,7 @@ namespace GamerBoxPresantationLayer.WPF
                     UserId = _userId
                 };
 
-                _gameService.AddGame(game);
+                 await _gameService.AddGameAsyncB(game);
                 MessageBox.Show("Oyun başarıyla eklendi!");
                 this.Close();
             }

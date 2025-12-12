@@ -5,6 +5,7 @@ using GamerBox.EntitiesLayer.Concrete;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GamerBox.DataAccessLayer.EntityFramework
 {
@@ -14,64 +15,69 @@ namespace GamerBox.DataAccessLayer.EntityFramework
         {
         }
 
-        public User GetUserByEmail(string email)
+        public async Task<User> GetUserByEmailAsync(string email)
         {
-            return _context.Users.FirstOrDefault(u => u.Email == email);
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
 
-        public List<User> GetFollowers(int userId)
+        public async Task<List<User>> GetFollowersAsync(int userId)
         {
             // Following listesi içinde userId'si olan kullanıcıları getir (Beni takip edenler)
-            return _context.Users
+            return await _context.Users
                 .Where(u => u.Following.Any(f => f.Id == userId))
-                .ToList();
+                .ToListAsync();
         }
 
-        public List<User> GetFollowing(int userId)
+        public async Task<List<User>> GetFollowingAsync(int userId)
         {
-            // Kullanıcının takip ettikleri (User.Following listesi)
-            var user = _context.Users
-                .Include(u => u.Following)
-                .FirstOrDefault(u => u.Id == userId);
+            //// Kullanıcının takip ettikleri (User.Following listesi)
+            //var user = await _context.Users
+            //    .Include(u => u.Following)
+            //    .FirstOrDefaultAsync(u => u.Id == userId);
 
-            return user?.Following.ToList() ?? new List<User>();
+            //return user?.Following.ToList() ?? new List<User>();
+            // SQL: Select * from Users where Id IN (Select FollowingId from ...)
+            return await _context.Users
+                .Where(u => u.Id == userId)
+                .SelectMany(u => u.Following) // Takip ettiklerine geçiş yap
+                .ToListAsync(); // Listeyi asenkron getir
         }
 
-        public List<string> GetFavoriteGenres(int userId)
+        public async Task<List<string>> GetFavoriteGenresAsync(int userId)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+            var genresString = await _context.Users
+          .Where(u => u.Id == userId)
+          .Select(u => u.FavoriteGenres)
+          .FirstOrDefaultAsync();
 
-            if (user == null || string.IsNullOrWhiteSpace(user.FavoriteGenres))
+            // 2. String boş mu kontrolü (Null check dahil)
+            if (string.IsNullOrWhiteSpace(genresString))
                 return new List<string>();
 
-            return user.FavoriteGenres
-                .Split(',')
+            // 3. Virgülle ayırıp listeye çevir
+            return genresString
+                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries) // Boşlukları temizle
                 .Select(g => g.Trim())
                 .ToList();
         }
 
-        public List<Game> GetUserGames(int userId)
+        public async Task<List<Game>> GetUserGamesAsync(int userId)
         {
-            return _context.Games.Where(g => g.UserId == userId).ToList();
+            return await _context.Games.Where(g => g.UserId == userId).ToListAsync();
         }
 
-        public Game GetGameById(int gameId)
+        public async Task<Game> GetGameByIdAsync(int gameId)
         {
-            return _context.Games.FirstOrDefault(g => g.Id == gameId);
+            return await _context.Games.FirstOrDefaultAsync(g => g.Id == gameId);
         }
 
-        public bool IsFollowing(int followerId, int targetUserId)
+        public async Task<bool> IsFollowingAsync(int followerId, int targetUserId)
         {
-            var follower = _context.Users
-                .Include(u => u.Following)
-                .FirstOrDefault(u => u.Id == followerId);
-
-            if (follower == null) return false;
-
-            return follower.Following.Any(u => u.Id == targetUserId);
+            return await _context.Users
+          .AnyAsync(u => u.Id == followerId && u.Following.Any(f => f.Id == targetUserId));
         }
 
-        public void Follow(int followerId, int targetUserId)
+        public void Follow(int followerId, int targetUserId)//async yapmaya çalış sonra
         {
             var follower = _context.Users
                 .Include(u => u.Following)
@@ -90,9 +96,9 @@ namespace GamerBox.DataAccessLayer.EntityFramework
             }
         }
 
-        public List<User> GetFollowedUsers(int userId)
+        public async Task<List<User>> GetFollowedUsersAsync(int userId)
         {
-            return GetFollowing(userId);
+            return await GetFollowingAsync(userId);
         }
     }
 }

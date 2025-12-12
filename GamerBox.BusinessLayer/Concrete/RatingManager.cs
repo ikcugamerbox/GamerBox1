@@ -4,6 +4,7 @@ using GamerBox.EntitiesLayer.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GamerBox.BusinessLayer.Concrete
 {
@@ -18,45 +19,45 @@ namespace GamerBox.BusinessLayer.Concrete
 
         // --- IGenericService İmplementasyonları ---
 
-        public void Add(Rating entity)
+        public async Task AddAsyncB(Rating entity)
         {
             ValidateScore(entity.Score);
             // Add metodu genellikle doğrudan kullanılmaz, RateGame kullanılır.
             // Ancak yine de validasyon ekledik.
-            _ratingDal.Add(entity);
+           await _ratingDal.AddAsync(entity);
         }
 
-        public void Update(Rating entity)
+        public async Task UpdateAsyncB(Rating entity)
         {
             ValidateScore(entity.Score);
-            _ratingDal.Update(entity);
+             await _ratingDal.UpdateAsync(entity);
         }
 
-        public void Delete(Rating entity)
+        public async Task DeleteAsyncB(Rating entity)
         {
-            _ratingDal.Delete(entity);
+            await _ratingDal.DeleteAsync(entity);
         }
 
-        public Rating GetById(int id)
+        public async Task<Rating> GetByIdAsyncB(int id)
         {
-            return _ratingDal.GetById(id);
+            return await _ratingDal.GetByIdAsync(id);
         }
 
-        public List<Rating> GetAll()
+        public async Task<List<Rating>> GetAllAsyncB()
         {
-            return _ratingDal.GetAll();
+            return  await _ratingDal.GetAllAsync();
         }
 
         // --- IRatingService Özel Metotları ---
 
-        public Rating RateGame(int userId, int gameId, int score)
+        public async Task<Rating> RateGameAsyncB(int userId, int gameId, int score)
         {
             ValidateScore(score);
 
             // DÜZELTME: Tüm listeyi çekmek yerine (GetAll), DAL'daki özel metodu kullandık.
-            // Bu, performansı 100 kat artırabilir.
-            bool alreadyRated = _ratingDal.HasUserRatedGame(userId, gameId);
-
+ 
+            bool alreadyRated = await _ratingDal.HasUserRatedGameAsync(userId, gameId);
+            // bool a await kullanmadan atayamayız çünkü metod async.bitmesini bekliyoruz
             if (alreadyRated)
                 throw new InvalidOperationException("You have already rated this game.");
 
@@ -69,36 +70,29 @@ namespace GamerBox.BusinessLayer.Concrete
                 CreatedAtUtc = DateTime.UtcNow
             };
 
-            _ratingDal.Add(rating);
+            await _ratingDal.AddAsync(rating);
             return rating;
         }
 
-        public List<Rating> GetByGameId(int gameId)
+        public async Task<List<Rating>> GetByGameIdAsyncB(int gameId)
         {
-            // Eğer DAL'da GetRatingsByGameId yoksa mecburen GetAll ile filtreliyoruz.
-            // İdealde DAL'a bu metodun eklenmesi gerekir. Şimdilik bu şekilde bırakıyoruz:
-            return _ratingDal.GetAll()
-                             .Where(r => r.GameId == gameId)
-                             .ToList();
+            return await _ratingDal.GetByGameIdAsync(gameId);
         }
 
-        public List<Rating> GetByUserId(int userId)
+        public async Task<List<Rating>> GetByUserIdAsyncB(int userId)
         {
-            return _ratingDal.GetAll()
-                            .Where(r => r.UserId == userId)
-                            .ToList();
+            return await _ratingDal.GetByUserIdASync(userId);
         }
-
-        public bool HasUserRated(int userId, int gameId)
+        public async Task<bool> HasUserRatedAsyncB(int userId, int gameId)
         {
             // DÜZELTME: Doğrudan veritabanı sorgusu
-            return _ratingDal.HasUserRatedGame(userId, gameId);
+            return await _ratingDal.HasUserRatedGameAsync(userId, gameId);
         }
 
-        public double GetAverageRating(int gameId)
+        public async Task<double> GetAverageRatingAsyncB(int gameId)
         {
             // DÜZELTME: Doğrudan veritabanından ortalama çekme
-            return _ratingDal.GetAverageRatingForGame(gameId);
+            return await _ratingDal.GetAverageRatingForGameAsync(gameId);
         }
 
         // --- Yardımcı Metotlar ---

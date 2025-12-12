@@ -5,16 +5,16 @@ namespace GamerBox.DataAccessLayer.Abstract
 {
     public interface IUserDal : IGenericDal<User>
     {
-        User GetUserByEmail(string email);
-        List<User> GetFollowers(int userId);
-        List<User> GetFollowing(int userId);
-        List<string> GetFavoriteGenres(int userId);
-        Game GetGameById(int gameId);
-        bool IsFollowing(int followerId, int targetUserId);
+        Task<User> GetUserByEmailAsync(string email);
+        Task<List<User>> GetFollowersAsync(int userId);
+        Task<List<User>> GetFollowingAsync(int userId);
+        Task<List<string>> GetFavoriteGenresAsync(int userId);
+        Task<Game> GetGameByIdAsync(int gameId);
+        Task<bool> IsFollowingAsync(int followerId, int targetUserId);
         void Follow(int followerId, int targetUserId);
-        List<User> GetFollowedUsers(int userId);
-        List<Game> GetUserGames(int userId);
+        Task<List<User>> GetFollowedUsersAsync(int userId);
+        Task<List<Game>> GetUserGamesAsync(int userId);
 
-        // AddFriend metodu kaldırıldı.
+
     }
 }

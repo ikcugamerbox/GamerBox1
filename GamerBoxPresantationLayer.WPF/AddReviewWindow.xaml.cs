@@ -1,6 +1,7 @@
 ﻿using GamerBox.BusinessLayer.Abstract;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -27,7 +28,7 @@ namespace GamerBoxPresantationLayer.WPF
             }
         }
 
-        private void btnSubmit_Click(object sender, RoutedEventArgs e)
+        private async void btnSubmit_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -35,12 +36,12 @@ namespace GamerBoxPresantationLayer.WPF
                 int score = cmbRating.SelectedIndex + 1; // ComboBox 0'dan başlar
 
                 // 1. Post Oluştur
-                _postService.CreatePost(_userId, _gameId, content);
+                await _postService.CreatePostAsyncB(_userId, _gameId, content);
 
                 // 2. Puan Ver (Hata verirse kullanıcı daha önce puan vermiş demektir, yakalayalım)
                 try
                 {
-                    _ratingService.HasUserRated(_userId, _gameId);
+                   await _ratingService.HasUserRatedAsyncB(_userId, _gameId);
                 }
                 catch (Exception)
                 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using GamerBox.BusinessLayer.Abstract;
 using GamerBox.DataAccessLayer.Abstract;
 using GamerBox.EntitiesLayer.Concrete;
@@ -20,27 +21,27 @@ namespace GamerBox.BusinessLayer.Concrete
 
         // --- GÜVENLİK ÖNLEMİ (IGenericService) ---
 
-        public void Add(User entity)
+        public async Task AddAsyncB(User entity)
         {
             // Kullanıcı eklerken şifre hashleme zorunluluğu olduğu için
             // Add metodunu kapatıyor ve Register'a yönlendiriyoruz.
             throw new InvalidOperationException("Please use 'Register' method to add a new user with secure password hashing.");
         }
 
-        public void Update(User entity)
+        public async  Task UpdateAsyncB(User entity)
         {
             // Not: Şifre güncelleme işlemleri için ayrı bir metot (ChangePassword) yazılmalı.
             // Bu metot sadece profil bilgilerini (Bio, Theme vb.) güncellemek için kullanılmalı.
-            _userDal.Update(entity);
+            await _userDal.UpdateAsync(entity);
         }
 
-        public void Delete(User entity) => _userDal.Delete(entity);
-        public User GetById(int id) => _userDal.GetById(id);
-        public List<User> GetAll() => _userDal.GetAll();
+        public async Task DeleteAsyncB(User entity) => await _userDal.DeleteAsync(entity);
+        public async Task<User> GetByIdAsyncB(int id) => await _userDal.GetByIdAsync(id);
+        public async Task<List<User>> GetAllAsyncB() => await _userDal.GetAllAsync();
 
         // --- IUserService Özel Metotları ---
 
-        public void Register(User user, string plainPassword)
+        public async Task RegisterAsyncB(User user, string plainPassword)
         {
             if (!IsValidEmail(user.Email))
                 throw new InvalidOperationException("Invalid email format.");
@@ -49,8 +50,8 @@ namespace GamerBox.BusinessLayer.Concrete
                 throw new InvalidOperationException("Password must be at least 8 characters long and contain uppercase, lowercase, digit, and special character.");
 
             // Email kontrolü
-            var exists = _userDal.GetAll().Any(u => u.Email == user.Email);
-            if (exists)
+            var existingUser = await _userDal.GetUserByEmailAsync(user.Email);
+            if (existingUser != null)
                 throw new InvalidOperationException("A user with this email already exists.");
 
             user.PasswordHash = HashPassword(plainPassword);
@@ -58,19 +59,16 @@ namespace GamerBox.BusinessLayer.Concrete
 
             // GenericRepository'deki Insert veya Add çağrılabilir, 
             // ama burada _userDal.Add'i direkt çağırıyoruz (bizim yasakladığımız UserManager.Add değil, DAL.Add)
-            _userDal.Add(user);
+            await _userDal.AddAsync(user);
         }
 
-        public User Login(string userEmail, string password)
+        public async Task<User> LoginAsyncB(string userEmail, string password)
         {
             if (!IsValidEmail(userEmail))
                 throw new InvalidOperationException("Invalid email format.");
 
             // Kullanıcıyı bul
-            var user = _userDal.GetUserByEmail(userEmail); // DAL'da varsa bunu kullanmak daha iyidir.
-            if (user == null)
-                // GetAll() yerine GetUserByEmail yoksa: _userDal.GetAll().FirstOrDefault(...)
-                user = _userDal.GetAll().FirstOrDefault(u => u.Email == userEmail);
+            var user = await _userDal.GetUserByEmailAsync(userEmail);
 
             if (user == null)
                 throw new InvalidOperationException("User not found.");
@@ -79,17 +77,17 @@ namespace GamerBox.BusinessLayer.Concrete
                 throw new InvalidOperationException("Incorrect password.");
 
             user.LastLoginUtc = DateTime.UtcNow;
-            _userDal.Update(user);
+            await _userDal.UpdateAsync(user);
 
             return user;
         }
 
-        public void Follow(int followerId, int targetUserId)
+        public async Task FollowAsyncB(int followerId, int targetUserId)
         {
             if (followerId == targetUserId)
                 throw new InvalidOperationException("You cannot follow yourself.");
 
-            var already = _userDal.IsFollowing(followerId, targetUserId);
+            var already = await _userDal.IsFollowingAsync(followerId, targetUserId);
             if (already)
                 throw new InvalidOperationException("This user is already being followed.");
 
@@ -98,33 +96,33 @@ namespace GamerBox.BusinessLayer.Concrete
 
         // --- Kişiselleştirme Metotları ---
 
-        public void SetTheme(int userId, string theme)
+        public async Task SetThemeAsyncB(int userId, string theme)
         {
             if (theme != "dark" && theme != "light")
                 throw new InvalidOperationException("Theme must be either 'dark' or 'light'.");
 
-            var user = _userDal.GetById(userId);
+            var user = await _userDal.GetByIdAsync(userId);
             if (user == null) throw new InvalidOperationException("User not found.");
 
             user.ThemePreference = theme; // Theme değil ThemePreference (Entity'de öyle tanımlı)
-            _userDal.Update(user);
-        }
+            await _userDal.UpdateAsync(user);
+        } 
 
-        public void SetPreferredCategories(int userId, List<string> categories)
+        public async Task SetPreferredCategoriesAsyncB(int userId, List<string> categories)
         {
             if (categories == null || categories.Count == 0)
                 throw new InvalidOperationException("You must select at least one category.");
 
-            var user = _userDal.GetById(userId);
+            var user = await _userDal.GetByIdAsync(userId);
             if (user == null) throw new InvalidOperationException("User not found.");
 
             // List<string> -> string çevrimi (Virgülle ayırma)
             user.FavoriteGenres = string.Join(",", categories.Distinct());
-            _userDal.Update(user);
+            await _userDal.UpdateAsync(user);
         }
 
-        public List<User> GetFollowedUsers(int userId) => _userDal.GetFollowedUsers(userId);
-        public List<Game> GetUserGames(int userId) => _userDal.GetUserGames(userId);
+        public async Task<List<User>> GetFollowedUsersAsyncB(int userId) => await _userDal.GetFollowedUsersAsync(userId);
+        public async Task<List<Game>> GetUserGamesAsyncB(int userId) =>await _userDal.GetUserGamesAsync(userId);
 
 
         // --- Helper Methods (Private) ---

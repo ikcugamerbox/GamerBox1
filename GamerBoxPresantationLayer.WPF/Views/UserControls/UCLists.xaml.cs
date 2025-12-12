@@ -2,6 +2,7 @@
 using GamerBox.EntitiesLayer.Concrete;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -28,10 +29,10 @@ namespace GamerBoxPresantationLayer.WPF.Views.UserControls
             this.DataContext = this;
         }
 
-        private void LoadLists()
+        private async void LoadLists()
         {
             // 1. En Çok Puan Alanlar
-            var topGames = _gameService.GetByRating(10);
+            var topGames = await  _gameService.GetByRatingAsyncB(10);
             foreach (var g in topGames)
             {
                 TopRatedGames.Add(new GameDisplay
@@ -51,7 +52,7 @@ namespace GamerBoxPresantationLayer.WPF.Views.UserControls
                 // (Not: Kullanıcı henüz kategori seçmediyse boş gelebilir)
                 try
                 {
-                    var recGames = _gameService.RecommendByCategories(mainWin.CurrentUser.Id, 10);
+                    var recGames = await _gameService.RecommendByCategoriesAsyncB(mainWin.CurrentUser.Id, 10);
                     foreach (var g in recGames)
                     {
                         RecommendedGames.Add(new GameDisplay

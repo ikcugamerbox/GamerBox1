@@ -5,15 +5,15 @@ namespace GamerBox.BusinessLayer.Abstract
     public interface IGameService
     {
         // Temel CRUD işlemleri
-        void AddGame(Game game);
-        void UpdateGame(Game game);
-        void DeleteGame(Game game);
-        Game GetGameById(int id);
-        List<Game> GetAllGames();
+        Task AddGameAsyncB(Game game);
+        Task UpdateGameAsyncB(Game game);
+        Task DeleteGameAsyncB(Game game);
+        Task<Game> GetGameByIdAsyncB(int id);
+        Task<List<Game>> GetAllGamesAsyncB();
 
         // Özel iş kuralları
-        List<Game> GetByRating(int count);
-        List<Game> RecommendByCategories(int userId, int count);
+        Task<List<Game>> GetByRatingAsyncB(int count);
+        Task<List<Game>> RecommendByCategoriesAsyncB(int userId, int count);
 
     }
 

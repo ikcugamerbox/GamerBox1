@@ -20,7 +20,7 @@ namespace GamerBox.BusinessLayer.Concrete
 
         // --- BASIC CRUD OPERATIONS ---
 
-        public void AddGame(Game entity)
+        public async Task AddGameAsyncB(Game entity)
         {
             if (entity.Price < 0)
                 throw new InvalidOperationException("Game price cannot be negative.");
@@ -28,10 +28,10 @@ namespace GamerBox.BusinessLayer.Concrete
             if (string.IsNullOrWhiteSpace(entity.Title)) // Name yerine Title kullandım (Entity ile uyumlu olması için)
                 throw new InvalidOperationException("Game title cannot be empty.");
 
-            _gameDal.Add(entity);
+            await _gameDal.AddAsync(entity);
         }
 
-        public void UpdateGame(Game entity)
+        public async Task UpdateGameAsyncB(Game entity)
         {
             if (entity.Price < 0)
                 throw new InvalidOperationException("Game price cannot be negative.");
@@ -39,60 +39,59 @@ namespace GamerBox.BusinessLayer.Concrete
             if (string.IsNullOrWhiteSpace(entity.Title))
                 throw new InvalidOperationException("Game title cannot be empty.");
 
-            _gameDal.Update(entity);
+           await _gameDal.UpdateAsync(entity);
         }
 
-        public void DeleteGame(Game entity)
+        public async Task DeleteGameAsyncB(Game entity)
         {
-            _gameDal.Delete(entity);
+            await _gameDal.DeleteAsync(entity);
         }
 
-        public Game GetGameById(int id)
+        public async Task<Game> GetGameByIdAsyncB(int id)
         {
-            return _gameDal.GetById(id);
+            return await _gameDal.GetByIdAsync(id);
         }
 
-        public List<Game> GetAllGames()
+        public async Task<List<Game>> GetAllGamesAsyncB()
         {
-            return _gameDal.GetAll();
+             return await _gameDal.GetAllAsync();
         }
 
         // --- CUSTOM BUSINESS METHODS ---
 
-        public List<Game> GetByRating(int count)
+        public async Task<List<Game>> GetByRatingAsyncB(int count)
         {
             if (count <= 0)
                 throw new InvalidOperationException("Count must be greater than zero.");
 
-            // Puanı yüksek olanları getirir
-            return _gameDal.GetAll()
-                           .OrderByDescending(g => g.AverageRating ?? 0)
-                           .Take(count)
-                           .ToList();
+            // GetAllAsync ÇAĞIRMA! 
+            // Doğrudan DAL'daki akıllı metodu çağır:
+            return await _gameDal.GetByRatingAsync(count);
         }
 
-        public List<Game> RecommendByCategories(int userId, int count)
+        public async Task<List<Game>> RecommendByCategoriesAsyncB(int userId, int count)
         {
             if (count <= 0)
                 throw new InvalidOperationException("Count must be greater than zero.");
 
             // DÜZELTME: GetGameById yerine GetById kullanıldı.
-            var user = _userDal.GetById(userId);
+            var user = _userDal.GetByIdAsync(userId);
             if (user == null)
                 throw new InvalidOperationException("User not found.");
 
             // Kullanıcının tercih ettiği kategori listesi
-            var preferredCategories = _userDal.GetFavoriteGenres(userId);
+            var preferredCategories = await _userDal.GetFavoriteGenresAsync(userId);
 
             if (preferredCategories == null || !preferredCategories.Any())
                 throw new InvalidOperationException("You must select a category before getting recommendations.");
 
             // Kategoriye göre filtreleme
-            return _gameDal.GetAll() // GetAllGames() yerine GetAll() kullanabiliriz, IGenericDal'dan gelir.
-                           .Where(g => preferredCategories.Contains(g.Genre)) // Category yerine Genre kullanıldı (Game entity'sinde Genre var)
-                           .OrderByDescending(g => g.AverageRating ?? 0)
-                           .Take(count)
-                           .ToList();
+            //return await _gameDal.GetAllAsync() // GetAllGames() yerine GetAll() kullanabiliriz, IGenericDal'dan gelir.
+            //               .Where(g => preferredCategories.Contains(g.Genre)) // Category yerine Genre kullanıldı (Game entity'sinde Genre var)
+            //               .OrderByDescending(g => g.AverageRating ?? 0)
+            //               .Take(count)
+            //               .ToList
+            return await _gameDal.GetByGenresAsync(preferredCategories, count);
         }
     }
 }
