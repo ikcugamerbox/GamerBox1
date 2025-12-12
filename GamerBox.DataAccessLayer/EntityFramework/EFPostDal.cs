@@ -2,6 +2,7 @@
 using GamerBox.DataAccessLayer.Context;
 using GamerBox.DataAccessLayer.Repositories;
 using GamerBox.EntitiesLayer.Concrete;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,14 +14,21 @@ namespace GamerBox.DataAccessLayer.EntityFramework
         {
         }
 
-        public List<Post> GetPostsByUser(int userId)
+        public async Task<List<Post>> GetPostsByUserAsync(int userId)
         {
-            return _context.Posts
+            return await _context.Posts
                 .Where(p => p.UserId == userId)
                 .OrderByDescending(p => p.CreatedAt)
-                .ToList();
+                .ToListAsync();
         }
-
+        public async Task<List<Post>> GetPostsByGameIdAsync(int gameId)
+        {
+            // SQL: SELECT * FROM Posts WHERE GameId = @gameId
+            return await _context.Posts
+                                 .Where(p => p.GameId == gameId)
+                                 .OrderByDescending(p => p.CreatedAt) // Yeniden eskiye
+                                 .ToListAsync();
+        }
         public List<Post> GetPostsByHashtag(string hashtag)
         {
             // Hashtag arama (Basit string contains veya list check)
@@ -31,12 +39,12 @@ namespace GamerBox.DataAccessLayer.EntityFramework
                 .ToList();
         }
 
-        public List<Post> GetRecentPosts(int count)
+        public async Task<List<Post>> GetRecentPostsAsync(int count)
         {
-            return _context.Posts
+            return await _context.Posts
                 .OrderByDescending(p => p.CreatedAt)
                 .Take(count)
-                .ToList();
+                .ToListAsync();
         }
 
         // Add metodu GenericRepository'den geliyor, tekrar yazmaya gerek yok.

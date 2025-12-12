@@ -10,11 +10,32 @@ namespace GamerBox.DataAccessLayer.EntityFramework
 {
     public class EFGameDal : GenericRepository<Game>, IGameDal
     {
-       
 
+        public async Task<List<Game>> GetByGenresAsync(List<string> genres, int count)
+        {
+            // SQL Karşılığı: SELECT TOP(@count) * FROM Games WHERE Genre IN (@genres) ...
+            return await _context.Games
+                .Where(g => genres.Contains(g.Genre)) // Türü, kullanıcının sevdikleri arasındaysa al
+                .OrderByDescending(g => g.AverageRating ?? 0) // Puana göre sırala
+                .Take(count) // İstenen adet kadar al
+                .ToListAsync();
+        }
         public EFGameDal(GamerBoxContext context) : base(context)
         {
             
+        }
+        public async Task<List<Game>> GetByRatingAsync(int count)
+        {
+            return await _context.Games
+                // Veritabanı tarafında AverageRating'e göre çoktan aza sıralar
+                // (?? 0) kısmı: Puanı null olanları 0 kabul et demektir.
+                .OrderByDescending(g => g.AverageRating ?? 0)
+
+                // Sadece istenen sayı kadar (örn: 10) veri alır (SQL TOP komutu)
+                .Take(count)
+
+                // Veriyi veritabanından çekip listeye çevirir
+                .ToListAsync();
         }
 
         public List<Game> GetTopRatedGames(int count)

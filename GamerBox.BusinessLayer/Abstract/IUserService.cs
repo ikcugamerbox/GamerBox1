@@ -4,13 +4,13 @@ namespace GamerBox.BusinessLayer.Abstract
 {
     public interface IUserService : IGenericService<User>
     {
-        void Register(User user, string plainPassword);
-        User Login(string userEmail, string password);
+        Task RegisterAsyncB(User user, string plainPassword);
+        Task<User> LoginAsyncB(string userEmail, string password);
         // giriş başarılıysa user döner , başarısızsa hata .
-        void Follow(int followerId, int targetUserId);
-        void SetTheme(int userId, string theme);
-        void SetPreferredCategories(int userId, List<string> categories);
-        List<User> GetFollowedUsers(int userId);
-        List<Game> GetUserGames(int userId);
+        Task FollowAsyncB(int followerId, int targetUserId);
+        Task SetThemeAsyncB(int userId, string theme);
+        Task SetPreferredCategoriesAsyncB(int userId, List<string> categories);
+        Task<List<User>> GetFollowedUsersAsyncB(int userId);
+        Task<List<Game>> GetUserGamesAsyncB(int userId);
     }
 }

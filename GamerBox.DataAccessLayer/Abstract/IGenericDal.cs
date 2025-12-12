@@ -8,12 +8,13 @@ namespace GamerBox.DataAccessLayer.Abstract
 {
     public interface IGenericDal<T> where T : class
     {
-        void Insert(T entity);
-        void Add(T entity);
-        void Update(T entity);
-        void Delete(T entity);
-        List<T> GetAll();
-        T GetById(int id);
+        // CRUD İşlemleri - Task dönerler (void yerine)
+        Task AddAsync(T entity);
+        Task UpdateAsync(T entity);
+        Task DeleteAsync(T entity);
 
+        // Veri Çekme İşlemleri
+        Task<List<T>> GetAllAsync();
+        Task<T> GetByIdAsync(int id);
     }
 }

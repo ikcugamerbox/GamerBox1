@@ -1,4 +1,5 @@
-﻿using GamerBox.DataAccessLayer.Abstract;
+﻿using GamerBox.BusinessLayer.Abstract;
+using GamerBox.DataAccessLayer.Abstract;
 using GamerBox.EntitiesLayer.Concrete;
 using Microsoft.Extensions.DependencyInjection; // Servis sağlayıcı için
 using System.Collections.ObjectModel;
@@ -9,9 +10,9 @@ namespace GamerBoxPresantationLayer.WPF.Views.UserControls
 {
     public partial class UCReviews : UserControl
     {
-        private readonly IPostDal _postDal;
-        private readonly IUserDal _userDal;
-        private readonly IGameDal _gameDal;
+        private readonly IPostService _postService;
+        private readonly IUserService _userService;
+        private readonly IGameService _gameService;
 
         public ObservableCollection<ReviewDisplayModel> RecentPosts { get; set; } = new ObservableCollection<ReviewDisplayModel>();
 
@@ -22,9 +23,9 @@ namespace GamerBoxPresantationLayer.WPF.Views.UserControls
             // Servisleri App.ServiceProvider üzerinden alıyoruz
             if (App.ServiceProvider != null)
             {
-                _postDal = App.ServiceProvider.GetService<IPostDal>();
-                _userDal = App.ServiceProvider.GetService<IUserDal>();
-                _gameDal = App.ServiceProvider.GetService<IGameDal>();
+                _postService = App.ServiceProvider.GetService<IPostService>();
+                _userService = App.ServiceProvider.GetService<IUserService>();
+                _gameService = App.ServiceProvider.GetService<IGameService>();
 
                 LoadPosts();
             }
@@ -32,17 +33,17 @@ namespace GamerBoxPresantationLayer.WPF.Views.UserControls
             this.DataContext = this;
         }
 
-        private void LoadPosts()
+        private async void LoadPosts()
         {
             // Son 20 postu getir (DAL'da GetRecentPosts metodu vardı)
-            var posts = _postDal.GetRecentPosts(20);
+            var posts = await _postService.GetRecentPostsAsyncB(20);
 
             foreach (var post in posts)
             {
-                // İlişkili verileri manuel yükleme (Lazy Loading kapalıysa gerekebilir)
-                var user = _userDal.GetById(post.UserId);
-                var game = post.GameId.HasValue ? _gameDal.GetById(post.GameId.Value) : null;
-
+                var user = await _userService.GetByIdAsyncB(post.UserId);
+                var game = post.GameId.HasValue
+                     ? await _gameService.GetGameByIdAsyncB(post.GameId.Value)
+                     : null;
                 RecentPosts.Add(new ReviewDisplayModel
                 {
                     UserName = user?.Username ?? "Unknown",

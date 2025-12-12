@@ -43,7 +43,7 @@ namespace GamerBoxPresantationLayer.WPF
                 };
 
                 // 3. Kayıt İşlemi (Business Layer)
-                _userService.Register(user, txtPass.Password);
+                _userService.RegisterAsyncB(user, txtPass.Password);
 
                 MessageBox.Show("Kayıt başarılı! Şimdi giriş yapabilirsiniz.", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
 

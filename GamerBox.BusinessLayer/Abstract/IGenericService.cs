@@ -10,11 +10,11 @@ namespace GamerBox.BusinessLayer.Abstract
     public interface IGenericService<T> where T : class
     {
 
-        void Add(T entity);
-        void Update(T entity);
-        void Delete(T entity);
-        T GetById(int id);
-        List<T> GetAll();
+        Task AddAsyncB(T entity);
+        Task UpdateAsyncB(T entity);
+        Task DeleteAsyncB(T entity);
+        Task<T> GetByIdAsyncB(int id);
+        Task<List<T>> GetAllAsyncB();
     }
 
 }

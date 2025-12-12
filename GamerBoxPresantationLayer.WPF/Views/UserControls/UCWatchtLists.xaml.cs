@@ -25,12 +25,12 @@ namespace GamerBoxPresantationLayer.WPF.Views.UserControls
             this.DataContext = this;
         }
 
-        private void LoadLibrary()
+        private async void LoadLibrary()
         {
             var mainWin = Application.Current.MainWindow as MainWindow;
             if (mainWin != null && mainWin.CurrentUser != null)
             {
-                var games = _userService.GetUserGames(mainWin.CurrentUser.Id);
+                var games = await _userService.GetUserGamesAsyncB(mainWin.CurrentUser.Id);
                 MyGames.Clear();
                 foreach (var game in games)
                 {

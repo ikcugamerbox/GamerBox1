@@ -25,7 +25,7 @@ namespace GamerBoxPresantationLayer.WPF
                 this.Owner.Opacity = 1;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace GamerBoxPresantationLayer.WPF
                 string password = txtPass.Password; // PasswordBox'tan şifre alma
 
                 // Business Layer'daki Login metodu çağrılıyor
-                User user = _userService.Login(email, password);
+                User user =await _userService.LoginAsyncB(email, password);
 
                 // Giriş Başarılı!
                 MessageBox.Show($"Hoşgeldin, {user.Username}!", "Giriş Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);

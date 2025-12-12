@@ -6,15 +6,15 @@ namespace GamerBox.BusinessLayer.Abstract
     public interface IPostService : IGenericService<Post>
     //IPostService IGenericService den miras alır.
     {
-        List<Post> GetByUserId(int userId);
+        Task<List<Post>> GetByUserIdAsyncB(int userId);
         //bir kullanıcının yaptığı tüm postları döner.
-        List<Post> GetByGameId(int gameId);
+        Task<List<Post>> GetByGameIdAsyncB(int gameId);
         //bir oyuna ait tüm postları döner. 
-        Post CreatePost(int userId, int? gameId, string content);
+        Task<Post> CreatePostAsyncB(int userId, int? gameId, string content);
         //yeni bir post oluşturur.bir oyuna bağlı gönderiyse oyun id si de verilir .content postun içerik metni. döndürdüğü değer oluşturulan post .
         List<string> ExtractHashtags(string content);
         //paylaşım metnindeki hastagleri bulup liste olarak döner .
+        Task<List<Post>> GetRecentPostsAsyncB(int count);
 
-   
     }
 }

@@ -5,18 +5,18 @@ namespace GamerBox.BusinessLayer.Abstract
 
     public interface IRatingService : IGenericService<Rating>
     {
-        List<Rating> GetByGameId(int gameId);
+        Task<List<Rating>> GetByGameIdAsyncB(int gameId);
         //belirli bir oyunun tüm puanlarını getir.
 
-        List<Rating> GetByUserId(int userId);
+        Task<List<Rating>> GetByUserIdAsyncB(int userId);
         // belirli bir kullanıcının verdiği tüm puanları getir.
 
-        double GetAverageRating(int gameId);
+        Task<double>GetAverageRatingAsyncB(int gameId);
         // oyunun ortalama puanını hesapla. 
 
-        bool HasUserRated(int userId, int gameId);
-       
+        Task<bool> HasUserRatedAsyncB(int userId, int gameId);
 
+        Task<Rating> RateGameAsyncB(int userId, int gameId, int score);
 
 
 

@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -42,17 +43,17 @@ namespace GamerBoxPresantationLayer.WPF.Views.UserControls
             this.DataContext = this;
         }
 
-        private void LoadUserData()
+        private async void LoadUserData()
         {
             // MainWindow'dan aktif kullanıcıyı al
             var mainWin = Application.Current.MainWindow as MainWindow;
             if (mainWin != null && mainWin.CurrentUser != null)
             {
                 // Veritabanından güncel halini çek (Takipçi sayıları vs. için)
-                _currentUser = _userService.GetById(mainWin.CurrentUser.Id);
+                _currentUser = await _userService.GetByIdAsyncB(mainWin.CurrentUser.Id);
 
                 // Gönderileri Çek
-                var posts = _postService.GetByUserId(_currentUser.Id);
+                var posts = await _postService.GetByUserIdAsyncB(_currentUser.Id);
                 foreach (var p in posts)
                 {
                     UserPosts.Add(new PostDisplayModel

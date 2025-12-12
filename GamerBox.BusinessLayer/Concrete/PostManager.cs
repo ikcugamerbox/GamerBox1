@@ -20,36 +20,36 @@ namespace GamerBox.BusinessLayer.Concrete
 
         // --- IGenericService İmplementasyonları ---
 
-        public void Add(Post entity)
+        public async Task AddAsyncB(Post entity)
         {
             ValidatePostContent(entity.Content);
-            _postDal.Add(entity);
+            await _postDal.AddAsync(entity);
         }
 
-        public void Update(Post entity)
+        public async Task UpdateAsyncB(Post entity)
         {
             ValidatePostContent(entity.Content);
-            _postDal.Update(entity);
+            await _postDal.UpdateAsync(entity);
         }
 
-        public void Delete(Post entity)
+        public async Task DeleteAsyncB(Post entity)
         {
-            _postDal.Delete(entity);
+            await _postDal.DeleteAsync(entity);
         }
 
-        public Post GetById(int id)
+        public async Task<Post> GetByIdAsyncB(int id)
         {
-            return _postDal.GetById(id);
+            return await _postDal.GetByIdAsync(id);
         }
 
-        public List<Post> GetAll()
+        public async Task<List<Post>> GetAllAsyncB()
         {
-            return _postDal.GetAll();
+            return await _postDal.GetAllAsync();
         }
 
         // --- IPostService Özel Metotları ---
 
-        public Post CreatePost(int userId, int? gameId, string content)
+        public async Task<Post> CreatePostAsyncB(int userId, int? gameId, string content)
         {
             ValidatePostContent(content);
 
@@ -65,7 +65,7 @@ namespace GamerBox.BusinessLayer.Concrete
                 CreatedAtUtc = DateTime.UtcNow // Entity'de ikisi de varsa ikisini de doldurabiliriz
             };
 
-            _postDal.Add(post);
+            await _postDal.AddAsync(post);
             return post;
         }
 
@@ -82,18 +82,16 @@ namespace GamerBox.BusinessLayer.Concrete
                 .ToList();
         }
 
-        public List<Post> GetByUserId(int userId)
+        public async Task<List<Post>> GetByUserIdAsyncB(int userId)
         {
-            return _postDal.GetPostsByUser(userId); // DAL'da hazır metot varken onu kullanmak daha performanslıdır
+            return await _postDal.GetPostsByUserAsync(userId); // DAL'da hazır metot varken onu kullanmak daha performanslıdır
         }
 
-        public List<Post> GetByGameId(int gameId)
+        public async Task<List<Post>> GetByGameIdAsyncB(int gameId)
         {
             // DAL'da GetPostsByGameId yoksa GetAll ile filtreleriz, varsa onu kullanırız.
             // Şimdilik GetAll üzerinden filtreleyelim:
-            return _postDal.GetAll()
-                           .Where(p => p.GameId == gameId)
-                           .ToList();
+            return await _postDal.GetPostsByGameIdAsync(gameId);
         }
 
         // --- Yardımcı Metotlar (Private) ---
@@ -105,6 +103,11 @@ namespace GamerBox.BusinessLayer.Concrete
 
             if (content.Length > MaxLength)
                 throw new InvalidOperationException($"Post cannot exceed {MaxLength} characters.");
+        }
+
+        public async Task<List<Post>> GetRecentPostsAsyncB(int count)
+        {
+            return await _postDal.GetRecentPostsAsync(count);
         }
     }
 }

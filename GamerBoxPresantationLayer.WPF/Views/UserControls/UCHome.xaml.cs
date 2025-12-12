@@ -94,12 +94,12 @@ namespace GamerBoxPresantationLayer.WPF.Classes
 
         // --- Metotlar ---
 
-        private void LoadGames()
+        private async void LoadGames()
         {
             if (_gameService == null) return;
 
             // 1. Veritabanından tüm oyunları çek
-            _allGames = _gameService.GetAllGames();
+            _allGames = await _gameService.GetAllGamesAsyncB();
 
             // 2. Türleri (Genres) dinamik olarak doldur
             var genres = _allGames.Select(g => g.Genre).Distinct().OrderBy(g => g).ToList();
