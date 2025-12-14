@@ -108,7 +108,7 @@
 
                         <Button Content="Temizle" Margin="0,30,0,0" Height="30"
                                 Background="#E81123" Foreground="White" BorderThickness="0"
-                                Click="btnClearFilters_Click">
+                                Command="{Binding ClearFiltersCommand}">
                             <Button.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="5"/>

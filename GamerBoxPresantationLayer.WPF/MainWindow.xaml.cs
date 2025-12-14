@@ -1,6 +1,7 @@
 ﻿using GamerBox.EntitiesLayer.Concrete;
 using GamerBoxPresantationLayer.WPF.Classes;
 using GamerBoxPresantationLayer.WPF.Views.UserControls;
+using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -39,10 +40,16 @@ namespace GamerBoxPresantationLayer.WPF
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = this; // Binding işlemleri için bağlamı kendisi yapıyoruz.
+            this.DataContext = this;
 
-            // Uygulama açılışında varsayılan sayfa Home olsun
-            MainContent.Content = new UCHome();
+            // ESKİ KOD: MainContent.Content = new UCHome(); -> Bu artık çalışmaz.
+
+            // YENİ KOD: UCHome'u servis sağlayıcıdan istiyoruz.
+            // O da bize içine ViewModel'i yerleştirilmiş hazır bir sayfa veriyor.
+            if (App.ServiceProvider != null)
+            {
+                MainContent.Content = App.ServiceProvider.GetService<UCHome>();
+            }
         }
 
         // --- PENCERE KONTROLLERİ ---
@@ -80,7 +87,8 @@ namespace GamerBoxPresantationLayer.WPF
 
         private void btnHomeClick(object sender, RoutedEventArgs e)
         {
-            MainContent.Content = new UCHome();
+            // UCHome'u ServiceProvider üzerinden alıyoruz, böylece ViewModel de içine otomatik enjekte ediliyor.
+            MainContent.Content = App.ServiceProvider.GetService<UCHome>();
         }
 
         private void btnRvsClick(object sender, RoutedEventArgs e)
@@ -90,20 +98,26 @@ namespace GamerBoxPresantationLayer.WPF
 
         private void btnListClick(object sender, RoutedEventArgs e)
         {
-            MainContent.Content = new UCLists();
+            if (App.ServiceProvider != null)
+            {
+                MainContent.Content = App.ServiceProvider.GetService<UCLists>();
+            }
         }
 
         private void btnWtListClick(object sender, RoutedEventArgs e)
         {
-            // İsterseniz burada giriş kontrolü yapabilirsiniz
-            MainContent.Content = new UCWatchtLists();
+            // Watchlist sayfasını servisten istiyoruz
+            if (App.ServiceProvider != null)
+            {
+                MainContent.Content = App.ServiceProvider.GetService<UCWatchtLists>();
+            }
         }
 
         private void btnProfileClick(object sender, RoutedEventArgs e)
         {
             if (!IsLoggedIn)
             {
-                MessageBox.Show("Profilinizi görüntülemek için lütfen giriş yapın.", "Erişim Reddedildi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show("Profilinizi görüntülemek için lütfen giriş yapın.", "Erişim Reddedildi");
                 return;
             }
             MainContent.Content = new UCProfile();
@@ -128,15 +142,19 @@ namespace GamerBoxPresantationLayer.WPF
 
         private void btnSignOut_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Çıkış yapmak istediğinize emin misiniz?", "Çıkış", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            
+
+            bool answer = CustomMessageBox.Show("Çıkış yapmak istediğinize emin misiniz?", "Çıkış", true);
+
+            if (answer) // Eğer Evet'e bastıysa
             {
-                // Bilgileri sıfırla
                 IsLoggedIn = false;
                 CurrentUser = null;
                 UserName = "Misafir";
-
-                // Ana sayfaya yönlendir
-                MainContent.Content = new UCHome();
+                if (App.ServiceProvider != null)
+                {
+                    MainContent.Content = App.ServiceProvider.GetService<UCHome>();
+                }
             }
         }
 

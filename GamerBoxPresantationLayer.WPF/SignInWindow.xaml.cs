@@ -39,14 +39,14 @@ namespace GamerBoxPresantationLayer.WPF
         {
             try
             {
-                string email = txtEmail.Text;
-                string password = txtPass.Password; // PasswordBox'tan şifre alma
+                string email = txtEmail.Text.Trim();
+                string password = txtPass.Password.Trim(); // PasswordBox'tan şifre alma
 
                 // Business Layer'daki Login metodu çağrılıyor
                 User user =await _userService.LoginAsyncB(email, password);
 
                 // Giriş Başarılı!
-                MessageBox.Show($"Hoşgeldin, {user.Username}!", "Giriş Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show($"Hoşgeldin, {user.Username}!", "Giriş Başarılı");
 
                 // Ana pencereye kullanıcı bilgisini gönder
 
@@ -68,7 +68,7 @@ namespace GamerBoxPresantationLayer.WPF
             catch (Exception ex)
             {
                 // Hata mesajı (Şifre yanlış vb.)
-                MessageBox.Show(ex.Message, "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(ex.Message, "Hata");
             }
         }
 
