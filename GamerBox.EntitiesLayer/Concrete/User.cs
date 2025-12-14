@@ -12,6 +12,7 @@ namespace GamerBox.EntitiesLayer.Concrete
         public string Email { get; set; }
         public string PasswordHash { get; set; }
         public string Bio { get; set; }
+        public string? ProfilePictureUrl { get; set; }
 
         // "Theme" yerine sadece bunu kullanıyoruz
         public string ThemePreference { get; set; } = "dark";

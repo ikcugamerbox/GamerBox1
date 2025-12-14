@@ -41,7 +41,8 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
                     GameName = game != null ? $"Playing: {game.Title}" : "",
                     Content = post.Content,
                     DateStr = post.CreatedAt.ToString("g"),
-                    HashtagsStr = post.Hashtags != null ? string.Join(" ", post.Hashtags.Select(h => "#" + h)) : ""
+                    HashtagsStr = post.Hashtags != null ? string.Join(" ", post.Hashtags.Select(h => "#" + h)) : "",
+                    ProfilePictureUrl = user?.ProfilePictureUrl ?? ""
                 });
             }
         }
@@ -55,5 +56,6 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
         public string Content { get; set; }
         public string DateStr { get; set; }
         public string HashtagsStr { get; set; }
+        public string ProfilePictureUrl { get; set; }
     }
 }

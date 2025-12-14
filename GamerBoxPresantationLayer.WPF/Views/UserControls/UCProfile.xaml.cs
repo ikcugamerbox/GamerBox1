@@ -34,8 +34,18 @@ namespace GamerBoxPresantationLayer.WPF.Views.UserControls
                 }
                 else
                 {
-                    MessageBox.Show("HATA: MainWindow.CurrentUser NULL görünüyor! Giriş yapılmamış gibi algılanıyor.", "Debug Hata");
+                    CustomMessageBox.Show("HATA: MainWindow.CurrentUser NULL görünüyor! Giriş yapılmamış gibi algılanıyor.", "Debug Hata");
                 }
+            }
+        }
+        private void ProfileImage_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Button;
+            if (btn != null && btn.ContextMenu != null)
+            {
+                // Butona tıklandığında menüyü manuel olarak aç
+                btn.ContextMenu.PlacementTarget = btn; // Menü butonun yanında açılsın
+                btn.ContextMenu.IsOpen = true;
             }
         }
     }

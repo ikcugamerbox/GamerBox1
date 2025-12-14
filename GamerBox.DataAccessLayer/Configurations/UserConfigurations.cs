@@ -15,7 +15,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Bio).HasMaxLength(300);
         builder.Property(x => x.ThemePreference).HasMaxLength(50);
         builder.Property(x => x.FavoriteGenres).HasMaxLength(200);
-
+        
+        builder.Property(x => x.ProfilePictureUrl)
+               .HasMaxLength(300) // Dosya yolları uzun olabilir
+               .IsRequired(false); // Resim zorunlu değil, varsayılan bir resim kullanabiliriz.
         // Post İlişkisi
         builder.HasMany(x => x.Posts)
                .WithOne(x => x.User)
