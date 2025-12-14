@@ -29,6 +29,11 @@ namespace GamerBoxPresantationLayer.WPF
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            this.DispatcherUnhandledException += (s, args) =>
+            {
+                MessageBox.Show($"Beklenmedik bir hata oluştu:\n{args.Exception.Message}\n\nDetay:\n{args.Exception.InnerException?.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+                args.Handled = true; // Uygulamanın çökmesini engelle
+            };
             // Konfigürasyonu inşa et
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -101,6 +106,8 @@ namespace GamerBoxPresantationLayer.WPF
             services.AddTransient<GamerBoxPresantationLayer.WPF.Views.UserControls.UCWatchtLists>();
             services.AddTransient<GamerBoxPresantationLayer.WPF.Views.UserControls.UCReviews>();
             services.AddTransient<AddGameWindow>();
+            services.AddTransient<GamerBoxPresantationLayer.WPF.Views.UserControls.UCProfile>();
+            services.AddTransient<GamerBoxPresantationLayer.WPF.Views.UserControls.UCReviews>();
         }
     }
 }

@@ -32,31 +32,46 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
         // Veriyi yükleyen metod
         public async Task LoadUserDataAsync(int userId)
         {
-            var user = await _userService.GetByIdAsyncB(userId);
-            if (user != null)
+            try
             {
-                Username = user.Username;
-                Email = user.Email;
-                Bio = user.Bio;
-                FollowersCount = user.Followers?.Count ?? 0;
-                FollowingCount = user.Following?.Count ?? 0;
-
-                // Postları Yükle
-                UserPosts.Clear();
-                var posts = await _postService.GetByUserIdAsyncB(userId);
-                foreach (var p in posts)
+                // Kullanıcı bilgilerini çek
+                var user = await _userService.GetByIdAsyncB(userId);
+                if (user != null)
                 {
-                    UserPosts.Add(new PostDisplayModel
+                    Username = user.Username;
+                    Email = user.Email;
+                    Bio = string.IsNullOrEmpty(user.Bio) ? "Henüz bir biyografi yok." : user.Bio;
+                    FollowersCount = user.Followers?.Count ?? 0;
+                    FollowingCount = user.Following?.Count ?? 0;
+
+                    // Postları çek
+                    UserPosts.Clear();
+                    var posts = await _postService.GetByUserIdAsyncB(userId);
+
+                    foreach (var p in posts)
                     {
-                        Content = p.Content,
-                        DateStr = p.CreatedAt.ToString("dd MMM yyyy HH:mm"),
-                        HashtagsStr = p.Hashtags != null ? string.Join(" ", p.Hashtags.Select(h => "#" + h)) : ""
-                    });
+                        UserPosts.Add(new PostDisplayModel
+                        {
+                            Content = p.Content,
+                            DateStr = p.CreatedAt.ToString("dd MMM yyyy HH:mm"),
+                            HashtagsStr = p.Hashtags != null ? string.Join(" ", p.Hashtags.Select(h => "#" + h)) : ""
+                        });
+                    }
+                }
+                else
+                {
+                    // Eğer kullanıcı null gelirse
+                    Username = "Kullanıcı Bulunamadı";
                 }
             }
+            catch (System.Exception ex)
+            {
+                // Hatayı ekrana bas (Bu sayede output penceresindeki hatanın sebebini göreceğiz)
+                System.Windows.MessageBox.Show($"Profil yüklenirken hata oluştu:\n{ex.Message}\n\nDetay: {ex.InnerException?.Message}", "Hata");
+            }
         }
-    }
 
-   
-   
+
+
+    }
 }

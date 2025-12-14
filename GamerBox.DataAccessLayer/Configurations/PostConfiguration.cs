@@ -1,6 +1,6 @@
 ﻿using GamerBox.EntitiesLayer.Concrete;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking; // BU EKLENDİ
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
@@ -18,16 +18,15 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
 
         builder.Property(x => x.CreatedAt)
                .IsRequired();
-
-        // Hashtags dönüşümü ve Karşılaştırıcısı
+        // Veritabanından okurken (v) eğer null gelirse boş liste dön, değilse Split yap.
         builder.Property(e => e.Hashtags)
                .HasConversion(
-                 v => string.Join(',', v), // Yazarken birleştir
-                 v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()) // Okurken ayır
+                 v => string.Join(',', v), // Yazarken: Listeyi virgülle birleştirip string yap
+                 v => v == null ? new List<string>() : v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()) // Okurken: Null kontrolü yap!
                .Metadata.SetValueComparer(new ValueComparer<List<string>>(
-                 (c1, c2) => c1.SequenceEqual(c2), // İki listenin içeriği aynı mı?
-                 c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())), // Hash kodu üret
-                 c => c.ToList())); // Listeyi kopyala (Snapshot)
+                 (c1, c2) => c1.SequenceEqual(c2),
+                 c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                 c => c.ToList()));
 
         builder.HasOne(x => x.User)
                .WithMany(x => x.Posts)

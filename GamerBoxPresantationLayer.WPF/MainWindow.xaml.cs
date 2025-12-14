@@ -118,16 +118,34 @@ namespace GamerBoxPresantationLayer.WPF
 
         private void btnProfileClick(object sender, RoutedEventArgs e)
         {
+ 
+
             if (!IsLoggedIn)
             {
                 CustomMessageBox.Show("Profilinizi görüntülemek için lütfen giriş yapın.", "Erişim Reddedildi");
                 return;
             }
+
             if (App.ServiceProvider != null)
             {
-                MainContent.Content = App.ServiceProvider.GetService<UCProfile>();
+                // Sayfayı çağırmayı dene
+                try
+                {
+                    var profilePage = App.ServiceProvider.GetService<UCProfile>();
+                    if (profilePage == null)
+                    {
+                        MessageBox.Show("HATA: UCProfile servisten NULL döndü!");
+                    }
+                    else
+                    {
+                        MainContent.Content = profilePage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Sayfa açılırken hata oluştu: {ex.Message}");
+                }
             }
-            ;
         }
 
         // --- GİRİŞ / ÇIKIŞ İŞLEMLERİ ---
