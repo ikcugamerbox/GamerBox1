@@ -93,7 +93,10 @@ namespace GamerBoxPresantationLayer.WPF
 
         private void btnRvsClick(object sender, RoutedEventArgs e)
         {
-            MainContent.Content = new UCReviews();
+            if (App.ServiceProvider != null)
+            {
+                MainContent.Content = App.ServiceProvider.GetService<UCReviews>();
+            }
         }
 
         private void btnListClick(object sender, RoutedEventArgs e)
@@ -120,7 +123,11 @@ namespace GamerBoxPresantationLayer.WPF
                 CustomMessageBox.Show("Profilinizi görüntülemek için lütfen giriş yapın.", "Erişim Reddedildi");
                 return;
             }
-            MainContent.Content = new UCProfile();
+            if (App.ServiceProvider != null)
+            {
+                MainContent.Content = App.ServiceProvider.GetService<UCProfile>();
+            }
+            ;
         }
 
         // --- GİRİŞ / ÇIKIŞ İŞLEMLERİ ---

@@ -69,7 +69,7 @@ namespace GamerBoxPresantationLayer.WPF
                 this.Owner.Opacity = 1;
         }
 
-        // Yardımcı Metot: Giriş Ekranına Dönüş
+        //  Giriş Ekranına Dönüş
         private void GoToSignIn()
         {
             var signIn = App.ServiceProvider.GetRequiredService<SignInWindow>();
