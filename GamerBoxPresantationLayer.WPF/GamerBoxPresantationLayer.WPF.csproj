@@ -21,14 +21,13 @@
     <Folder Include="Assests\" />
     <Folder Include="Converters\" />
     <Folder Include="Commands\" />
-    <Folder Include="Models\" />
-    <Folder Include="ViewModels\" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Resources\treasure-chest.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

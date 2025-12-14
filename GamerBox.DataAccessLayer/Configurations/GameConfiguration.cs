@@ -29,7 +29,7 @@ public class GameConfiguration : IEntityTypeConfiguration<Game>
         builder.Property(x => x.ImageUrl)
                .HasMaxLength(300);
 
-        // ÇAKIŞMAYI ÇÖZEN KISIM BURASI:
+    
         // Kullanıcı silindiğinde, eğer oyunları varsa silme işlemini engelle (Restrict).
         // Bu sayede "User -> Game -> Post" zinciri kırılır.
         builder.HasOne(x => x.User)

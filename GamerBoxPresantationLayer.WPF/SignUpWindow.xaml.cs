@@ -16,18 +16,18 @@ namespace GamerBoxPresantationLayer.WPF
             _userService = userService;
         }
 
-        private void Register_Click(object sender, RoutedEventArgs e)
+        private async void Register_Click(object sender, RoutedEventArgs e)
         {
             // 1. Validasyon Kontrolleri
             if (txtPass.Password != txtPassConfirm.Password)
             {
-                MessageBox.Show("Şifreler uyuşmuyor!", "Hata", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show("Şifreler uyuşmuyor!", "Hata");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(txtUsername.Text) || string.IsNullOrWhiteSpace(txtEmail.Text) || string.IsNullOrWhiteSpace(txtPass.Password))
             {
-                MessageBox.Show("Lütfen tüm zorunlu alanları doldurun.", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show("Lütfen tüm zorunlu alanları doldurun.", "Uyarı");
                 return;
             }
 
@@ -43,16 +43,16 @@ namespace GamerBoxPresantationLayer.WPF
                 };
 
                 // 3. Kayıt İşlemi (Business Layer)
-                _userService.RegisterAsyncB(user, txtPass.Password);
+                await _userService.RegisterAsyncB(user, txtPass.Password);
 
-                MessageBox.Show("Kayıt başarılı! Şimdi giriş yapabilirsiniz.", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show("Kayıt başarılı! Şimdi giriş yapabilirsiniz.", "Başarılı");
 
                 // 4. Giriş Ekranına Yönlendirme
                 GoToSignIn();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Kayıt Hatası", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(ex.Message, "Kayıt Hatası");
             }
         }
 

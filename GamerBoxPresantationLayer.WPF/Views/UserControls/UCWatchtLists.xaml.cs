@@ -1,7 +1,5 @@
-﻿using GamerBox.BusinessLayer.Abstract;
-using GamerBox.EntitiesLayer.Concrete;
+﻿using GamerBoxPresantationLayer.WPF.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -9,51 +7,50 @@ namespace GamerBoxPresantationLayer.WPF.Views.UserControls
 {
     public partial class UCWatchtLists : UserControl
     {
-        private readonly IUserService _userService;
-        public ObservableCollection<Game> MyGames { get; set; } = new ObservableCollection<Game>();
+        public WatchlistViewModel ViewModel { get; }
 
-        public UCWatchtLists()
+        public UCWatchtLists(WatchlistViewModel viewModel)
         {
             InitializeComponent();
+            ViewModel = viewModel;
+            this.DataContext = ViewModel;
 
-            if (App.ServiceProvider != null)
-            {
-                _userService = App.ServiceProvider.GetService<IUserService>();
-                LoadLibrary();
-            }
-
-            this.DataContext = this;
+            this.Loaded += UCWatchtLists_Loaded;
         }
 
-        private async void LoadLibrary()
+        private async void UCWatchtLists_Loaded(object sender, RoutedEventArgs e)
         {
             var mainWin = Application.Current.MainWindow as MainWindow;
             if (mainWin != null && mainWin.CurrentUser != null)
             {
-                var games = await _userService.GetUserGamesAsyncB(mainWin.CurrentUser.Id);
-                MyGames.Clear();
-                foreach (var game in games)
-                {
-                    MyGames.Add(game);
-                }
+                await ViewModel.LoadLibraryAsync(mainWin.CurrentUser.Id);
             }
         }
+
         private void btnAddGame_Click(object sender, RoutedEventArgs e)
         {
             var mainWin = Application.Current.MainWindow as MainWindow;
             if (mainWin != null && mainWin.CurrentUser != null)
             {
-                // Pencereyi aç
-                AddGameWindow win = new AddGameWindow(mainWin.CurrentUser.Id);
-                win.Owner = mainWin;
-                win.ShowDialog();
+                // 1. Pencereyi servisten iste (ViewModel içinde hazır gelir)
+                var addGameWin = App.ServiceProvider.GetService<AddGameWindow>();
 
-                // Pencere kapandığında listeyi yenile
-                LoadLibrary();
+                if (addGameWin != null)
+                {
+                    // 2. Kullanıcı ID'sini aktar
+                    addGameWin.Initialize(mainWin.CurrentUser.Id);
+                    addGameWin.Owner = mainWin;
+
+                    // 3. Pencereyi aç
+                    addGameWin.ShowDialog();
+
+                    // 4. Listeyi yenile
+                    _ = ViewModel.LoadLibraryAsync(mainWin.CurrentUser.Id);
+                }
             }
             else
             {
-                MessageBox.Show("Oyun eklemek için giriş yapmalısınız.");
+                CustomMessageBox.Show("Oyun eklemek için giriş yapmalısınız.","Erişim Reddedildi");
             }
         }
     }

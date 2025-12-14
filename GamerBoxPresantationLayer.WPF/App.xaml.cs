@@ -85,6 +85,17 @@ namespace GamerBoxPresantationLayer.WPF
             services.AddTransient<MainWindow>();
             services.AddTransient<SignInWindow>();
             services.AddTransient<SignUpWindow>();
+
+            // ViewModels
+            services.AddTransient<GamerBoxPresantationLayer.WPF.ViewModels.HomeViewModel>();
+            services.AddTransient<GamerBoxPresantationLayer.WPF.ViewModels.ListsViewModel>(); 
+            services.AddTransient<GamerBoxPresantationLayer.WPF.ViewModels.WatchlistViewModel>();
+            services.AddTransient<GamerBoxPresantationLayer.WPF.ViewModels.AddGameViewModel>();
+            // Views (Inject edilebilir olması için)
+            services.AddTransient<GamerBoxPresantationLayer.WPF.Classes.UCHome>();
+            services.AddTransient<GamerBoxPresantationLayer.WPF.Views.UserControls.UCLists>(); 
+            services.AddTransient<GamerBoxPresantationLayer.WPF.Views.UserControls.UCWatchtLists>();
+            services.AddTransient<AddGameWindow>();
         }
     }
 }
