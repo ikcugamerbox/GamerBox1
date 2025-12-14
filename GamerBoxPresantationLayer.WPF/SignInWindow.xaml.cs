@@ -24,6 +24,16 @@ namespace GamerBoxPresantationLayer.WPF
             if (this.Owner != null)
                 this.Owner.Opacity = 1;
         }
+        private void txtEmail_KeyDown(object sender, KeyEventArgs e)
+        {
+            
+            if (e.Key == Key.Enter)
+            {
+                
+                txtPass.Focus();
+                e.Handled = true;
+            }
+        }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
