@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using GamerBox.BusinessLayer.Abstract;
 using GamerBoxPresantationLayer.WPF.Models;
+using GamerBoxPresantationLayer.WPF.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
     public partial class ListDetailsViewModel : ObservableObject
     {
         private readonly IUserListService _userListService;
+        private readonly IDialogService _dialogService;
         private int _listId;
         private int _userId;
 
@@ -20,9 +22,10 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
         // Listede gösterilecek oyunlar
         public ObservableCollection<GameDisplayModel> Games { get; } = new ObservableCollection<GameDisplayModel>();
 
-        public ListDetailsViewModel(IUserListService userListService)
+        public ListDetailsViewModel(IUserListService userListService, IDialogService dialogService)
         {
             _userListService = userListService;
+            _dialogService = dialogService;
         }
 
         public async Task LoadDataAsync(int listId, int userId, string name)
@@ -63,7 +66,7 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
         [RelayCommand]
         private async Task RemoveGameAsync(int gameId)
         {
-            var result = CustomMessageBox.Show("Bu oyunu listeden kaldırmak istediğine emin misin?", "Onay", true);
+            var result = _dialogService.ShowConfirmation("Bu oyunu listeden kaldırmak istediğine emin misin?", "Onay");
             if (result)
             {
                 await _userListService.RemoveGameFromListAsyncB(_listId, gameId);

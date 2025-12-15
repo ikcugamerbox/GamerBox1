@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using GamerBox.BusinessLayer.Abstract;
 using GamerBox.EntitiesLayer.Concrete;
+using GamerBoxPresantationLayer.WPF.Services;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -11,6 +12,7 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
     public partial class SignUpViewModel : ObservableObject
     {
         private readonly IUserService _userService;
+        private readonly IDialogService _dialogService;
 
         [ObservableProperty] private string fullName; // Bio yerine kullanıyoruz
         [ObservableProperty] private string username;
@@ -19,13 +21,13 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
         public Action GoToSignInAction { get; set; }
         public Action RequestClose { get; set; }
 
-        public SignUpViewModel(IUserService userService)
+        public SignUpViewModel(IUserService userService,IDialogService dialogService)
         {
             _userService = userService;
+            _dialogService = dialogService;
         }
 
-        // Parametre olarak object[] veya benzeri bir yapı ile iki şifreyi de alabiliriz 
-        // ama basitlik adına PasswordBox'ları View'den alacağız.
+        
         [RelayCommand]
         private async Task RegisterAsync(object parameter)
         {
@@ -40,13 +42,13 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
             // 1. Validasyon
             if (password != confirmPass)
             {
-                CustomMessageBox.Show("Şifreler uyuşmuyor!", "Hata");
+                _dialogService.ShowMessage("Şifreler uyuşmuyor!", "Hata");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(password))
             {
-                CustomMessageBox.Show("Lütfen tüm zorunlu alanları doldurun.", "Uyarı");
+                _dialogService.ShowMessage("Lütfen tüm zorunlu alanları doldurun.", "Uyarı"); 
                 return;
             }
 
@@ -61,15 +63,16 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
                 };
 
                 await _userService.RegisterAsyncB(user, password);
-                CustomMessageBox.Show("Kayıt başarılı! Şimdi giriş yapabilirsiniz.", "Başarılı");
-
+                _dialogService.ShowMessage("Kayıt başarılı! Şimdi giriş yapabilirsiniz.", "Başarılı");
+             
                 // Giriş sayfasına yönlendir
                 GoToSignInAction?.Invoke();
                 RequestClose?.Invoke();
             }
             catch (Exception ex)
             {
-                CustomMessageBox.Show(ex.Message, "Kayıt Hatası");
+                _dialogService.ShowMessage(ex.Message, "Kayıt Hatası");
+           
             }
         }
 

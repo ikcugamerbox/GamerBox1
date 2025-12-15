@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using GamerBox.BusinessLayer.Abstract;
 using GamerBox.EntitiesLayer.Concrete;
+using GamerBoxPresantationLayer.WPF.Services;
 using Microsoft.Win32; // Dosya seçimi için
 using System;
 using System.IO;
@@ -13,7 +14,8 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
     public partial class AddGameViewModel : ObservableObject
     {
         private readonly IGameService _gameService;
-        private int _userId; // Oyunu ekleyen kullanıcının ID'si
+        private int _userId;
+        private readonly IDialogService _dialogService;
 
         // Pencereyi kapatmak için bir olay (Action) tanımlıyoruz
         public Action RequestClose { get; set; }
@@ -26,9 +28,10 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
         [ObservableProperty] private string imageUrl = "/Resources/treasure-chest.png"; // Varsayılan resim
         [ObservableProperty] private string selectedImagePath; // Dosya yolunu tutar
 
-        public AddGameViewModel(IGameService gameService)
+        public AddGameViewModel(IGameService gameService, IDialogService dialogService)
         {
             _gameService = gameService;
+            _dialogService = dialogService;
         }
 
         // Kullanıcı ID'sini dışarıdan almak için bir metod
@@ -41,14 +44,12 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
         [RelayCommand]
         private void SelectImage()
         {
-            OpenFileDialog op = new OpenFileDialog();
-            op.Title = "Oyun Görseli Seç";
-            op.Filter = "Resim Dosyaları|*.jpg;*.jpeg;*.png;*.bmp";
+            string? fileName = _dialogService.OpenFile("Oyun Görseli Seç", "Resim Dosyaları|*.jpg;*.jpeg;*.png;*.bmp");
 
-            if (op.ShowDialog() == true)
+            if (fileName != null)
             {
-                SelectedImagePath = op.FileName;
-                ImageUrl = op.FileName; // Ekranda önizlemeyi güncelle
+                SelectedImagePath = fileName;
+                ImageUrl = fileName;
             }
         }
 
@@ -60,8 +61,7 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(Title) || string.IsNullOrWhiteSpace(Genre))
                 {
-                    // true/false parametresi vermezsek varsayılan olarak "Tamam" butonu çıkar.
-                    CustomMessageBox.Show("Lütfen oyun adı ve türünü giriniz.", "Eksik Bilgi");
+                    _dialogService.ShowMessage("Lütfen oyun adı ve türünü giriniz.", "Eksik Bilgi");
                     return;
                 }
 
@@ -97,14 +97,14 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
                 // 3. Servise Gönder
                 await _gameService.AddGameAsyncB(game);
 
-                CustomMessageBox.Show("Oyun başarıyla eklendi!", "Başarılı");
+                _dialogService.ShowMessage("Oyun başarıyla eklendi!", "Başarılı");
 
                 // 4. Pencereyi Kapat (Action Tetikle)
                 RequestClose?.Invoke();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Hata: " + ex.Message);
+                _dialogService.ShowMessage("Hata: " + ex.Message, "Hata");
             }
         }
     }

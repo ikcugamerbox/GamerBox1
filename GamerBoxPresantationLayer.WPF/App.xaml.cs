@@ -12,6 +12,7 @@ using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Windows;
+using GamerBoxPresantationLayer.WPF.Services;
 
 
 namespace GamerBoxPresantationLayer.WPF
@@ -80,6 +81,7 @@ namespace GamerBoxPresantationLayer.WPF
             services.AddTransient<IPostDal, EFPostDal>();
             services.AddTransient<IRatingDal, EFRatingDal>();
             services.AddTransient<IUserListDal, EFUserListDal>();
+            services.AddTransient<IHashtagDal, EFHashtagDal>();
 
             //Servisler
             services.AddTransient<IUserService, UserManager>();
@@ -87,7 +89,9 @@ namespace GamerBoxPresantationLayer.WPF
             services.AddTransient<IPostService, PostManager>();
             services.AddTransient<IRatingService, RatingManager>();
             services.AddTransient<IUserListService, UserListManager>();
+            services.AddTransient<IHashtagService, HashtagManager>();
 
+            services.AddSingleton<IDialogService, DialogService>();
             // Pencereler
             services.AddTransient<MainWindow>();
             services.AddTransient<SignInWindow>();

@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using GamerBox.BusinessLayer.Abstract;
 using GamerBox.EntitiesLayer.Concrete;
 using GamerBoxPresantationLayer.WPF.Models;
+using GamerBoxPresantationLayer.WPF.Services;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -16,7 +17,8 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
     {
         private readonly IUserService _userService;
         private readonly IPostService _postService;
-        private int _currentUserId;
+        private int _currentUserId; 
+        private readonly IDialogService _dialogService;
 
         // UI'da gösterilecek veriler
         [ObservableProperty] private string username = "Misafir";
@@ -30,10 +32,11 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
         public ObservableCollection<PostDisplayModel> UserPosts { get; } = new ObservableCollection<PostDisplayModel>();
         public ObservableCollection<UserDisplayModel> FollowersList { get; } = new ObservableCollection<UserDisplayModel>();
 
-        public ProfileViewModel(IUserService userService, IPostService postService)
+        public ProfileViewModel(IUserService userService, IPostService postService, IDialogService dialogService)
         {
             _userService = userService;
             _postService = postService;
+            _dialogService = dialogService;
         }
 
         // Veriyi yükleyen metod
@@ -108,16 +111,12 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
         private async Task ChangeProfilePictureAsync()
         {
             // 1. Dosya Seçme Penceresi
-            OpenFileDialog op = new OpenFileDialog();
-            op.Title = "Profil Fotoğrafı Seç";
-            op.Filter = "Resim Dosyaları|*.jpg;*.jpeg;*.png;*.bmp";
+            string? selectedFilePath = _dialogService.OpenFile("Profil Fotoğrafı Seç", "Resim Dosyaları|*.jpg;*.jpeg;*.png;*.bmp");
 
-            if (op.ShowDialog() == true)
+            if (selectedFilePath != null)
             {
                 try
                 {
-                    string selectedFilePath = op.FileName;
-
                     // 2. Klasör Oluşturma (UserImages)
                     string appPath = AppDomain.CurrentDomain.BaseDirectory;
                     string targetFolder = Path.Combine(appPath, "UserImages");
@@ -143,12 +142,12 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
 
                         // 5. Arayüzü Güncelle
                         ProfilePictureUrl = destPath;
-                        CustomMessageBox.Show("Profil fotoğrafınız güncellendi!", "Başarılı");
+                        _dialogService.ShowMessage("Profil fotoğrafınız güncellendi!", "Başarılı");
                     }
                 }
                 catch (Exception ex)
                 {
-                    CustomMessageBox.Show($"Fotoğraf yüklenirken hata oluştu: {ex.Message}", "Hata");
+                    _dialogService.ShowMessage($"Fotoğraf yüklenirken hata oluştu: {ex.Message}", "Hata");
                 }
             }
         }
@@ -160,7 +159,7 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
 
             try
             {
-                var result = CustomMessageBox.Show("Profil fotoğrafını kaldırmak istediğine emin misin?", "Fotoğrafı Kaldır", true);
+                bool result = _dialogService.ShowConfirmation("Profil fotoğrafını kaldırmak istediğine emin misin?", "Fotoğrafı Kaldır");
 
                 if (result)
                 {
@@ -174,13 +173,13 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
                         // 2. Arayüzü güncelle (Boş yapınca otomatik emojiye dönecek)
                         ProfilePictureUrl = "";
 
-                        CustomMessageBox.Show("Profil fotoğrafı kaldırıldı.", "Bilgi");
+                        _dialogService.ShowMessage("Profil fotoğrafı kaldırıldı.", "Bilgi");
                     }
                 }
             }
             catch (Exception ex)
             {
-                CustomMessageBox.Show("Hata: " + ex.Message);
+                _dialogService.ShowMessage("Hata: " + ex.Message, "Hata");
             }
         }
 

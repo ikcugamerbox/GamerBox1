@@ -1,7 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GamerBox.BusinessLayer.Abstract;
-using GamerBoxPresantationLayer.WPF.Models; 
+using GamerBoxPresantationLayer.WPF.Models;
+using GamerBoxPresantationLayer.WPF.Services;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,6 +13,7 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
     {
         private readonly IGameService _gameService;
         private readonly IUserListService _userListService;
+        private readonly IDialogService _dialogService;
 
         [ObservableProperty] private bool isGuest = true;
         [ObservableProperty] private string newListName = "";
@@ -22,10 +24,11 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
         public ObservableCollection<GameDisplayModel> RecommendedGames { get; } = new ObservableCollection<GameDisplayModel>();
         public ObservableCollection<UserListDisplayModel> MyCustomLists { get; } = new ObservableCollection<UserListDisplayModel>();
 
-        public ListsViewModel(IGameService gameService, IUserListService userListService)
+        public ListsViewModel(IGameService gameService, IUserListService userListService, IDialogService dialogService)
         {
             _gameService = gameService;
             _userListService = userListService;
+            _dialogService = dialogService;
         }
 
         // Kullanıcı ID'sini parametre olarak alıyoruz (Giriş yapmamışsa null gelir)
@@ -102,12 +105,13 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
                 {
                     await _userListService.CreateListAsyncB(mainWin.CurrentUser.Id, NewListName);
                     NewListName = ""; // Kutuyu temizle
-                    CustomMessageBox.Show("Liste oluşturuldu!", "Başarılı");
+                    _dialogService.ShowMessage("Liste oluşturuldu!", "Başarılı");
                     await LoadDataAsync(mainWin.CurrentUser.Id); // Listeyi yenile
                 }
                 catch (System.Exception ex)
                 {
-                    CustomMessageBox.Show(ex.Message, "Hata");
+                    _dialogService.ShowMessage(ex.Message, "Hata");
+                    
                 }
             }
         }

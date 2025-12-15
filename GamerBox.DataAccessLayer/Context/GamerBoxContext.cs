@@ -19,6 +19,7 @@ namespace GamerBox.DataAccessLayer.Context
         public DbSet<Rating> Ratings { get; set; }
 
         public DbSet<UserList> UserLists { get; set; }
+        public DbSet<Hashtag> Hashtags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
