@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:GamerBoxPresantationLayer.WPF"
         mc:Ignorable="d"
         Title="GamerBox" Height="850" Width="1280"
+        Icon="/Resources/treasure-chest.ico"
         Background="{DynamicResource MainBackgroundBrush}" 
         WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="CanResizeWithGrip">
 
