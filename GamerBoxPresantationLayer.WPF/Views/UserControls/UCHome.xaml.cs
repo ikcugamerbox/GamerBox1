@@ -1,4 +1,5 @@
 ﻿using GamerBoxPresantationLayer.WPF.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -20,8 +21,7 @@ namespace GamerBoxPresantationLayer.WPF.Classes
             this.Loaded += async (s, e) => await ViewModel.LoadDataAsync();
         }
 
-        // İnceleme butonu arayüz olayı olduğu için burada kalabilir veya
-        // CommandParameter ile ViewModel'e taşınabilir. Şimdilik burada kalsın, basitleştirelim.
+
         private void btnReview_Click(object sender, RoutedEventArgs e)
         {
             var btn = sender as Button;
@@ -29,17 +29,20 @@ namespace GamerBoxPresantationLayer.WPF.Classes
             {
                 var mainWin = Application.Current.MainWindow as MainWindow;
 
-                if (mainWin == null || !mainWin.IsLoggedIn || mainWin.CurrentUser == null)
+                if (mainWin != null)
                 {
-                    CustomMessageBox.Show("İnceleme yazmak için giriş yapmalısınız.","Erişim Reddedildi");
-                    return;
-                }
+                    // 1. Detay sayfasını servisten al
+                    var detailPage = App.ServiceProvider.GetService<GamerBoxPresantationLayer.WPF.Views.UserControls.UCGameDetail>();
 
-                // Not: _allGames'e buradan erişemediğimiz için başlığı basitçe "Oyun" geçiyoruz
-                // İleride bunu da düzelteceğiz.
-                AddReviewWindow win = new AddReviewWindow(gameId, "Seçilen Oyun", mainWin.CurrentUser.Id);
-                win.Owner = mainWin;
-                win.ShowDialog();
+                    if (detailPage != null)
+                    {
+                        // 2. Sayfayı başlat (Misafir veya Üye olarak)
+                        detailPage.Initialize(gameId);
+
+                        // 3. Sayfayı değiştir
+                        mainWin.MainContent.Content = detailPage;
+                    }
+                }
             }
         }
 
@@ -50,8 +53,26 @@ namespace GamerBoxPresantationLayer.WPF.Classes
             else
                 FilterColumn.Width = new GridLength(0);
         }
+        private void btnAddToList_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Button;
+            if (btn != null && btn.Tag is int gameId)
+            {
+                var mainWin = Application.Current.MainWindow as MainWindow;
 
-        // Temizle butonu artık ViewModel içindeki bir Command'a bağlanacak (XAML'da yapacağız)
-        // O yüzden btnClearFilters_Click metodunu buradan silebilirsin.
+                if (mainWin == null || !mainWin.IsLoggedIn || mainWin.CurrentUser == null)
+                {
+                    CustomMessageBox.Show("Listeye oyun eklemek için giriş yapmalısınız.", "Erişim Reddedildi");
+                    return;
+                }
+
+                // Yeni pencereyi aç
+                AddGameToListWindow win = new AddGameToListWindow(mainWin.CurrentUser.Id, gameId);
+                win.Owner = mainWin;
+                win.ShowDialog();
+            }
+        }
+
+
     }
 }

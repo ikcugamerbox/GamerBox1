@@ -1,0 +1,88 @@
+﻿<UserControl x:Class="GamerBoxPresantationLayer.WPF.Views.UserControls.UCListDetails"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="800">
+
+    <Grid Background="{DynamicResource MainBackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="20">
+            <DockPanel>
+                <Button Command="{Binding GoBackCommand}" DockPanel.Dock="Left" Margin="0,0,20,0"
+                        Background="Transparent" BorderThickness="0" Foreground="{DynamicResource SecondaryTextBrush}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⬅" FontSize="16" Margin="0,0,5,0"/>
+                        <TextBlock Text="Listelere Dön" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <TextBlock Text="{Binding ListName}" FontSize="24" FontWeight="Bold" 
+                           Foreground="{DynamicResource AccentBrush}"/>
+            </DockPanel>
+        </Border>
+
+        <ScrollViewer Grid.Row="1" Margin="10">
+            <ItemsControl ItemsSource="{Binding Games}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="10" Background="{DynamicResource CardBackgroundBrush}" 
+                                CornerRadius="10" Width="180">
+                            <StackPanel>
+                                <Image Source="{Binding Poster}" Height="240" Stretch="UniformToFill" ClipToBounds="True"/>
+                                <TextBlock Text="{Binding Title}" Foreground="{DynamicResource PrimaryTextBrush}" 
+                                           FontSize="15" FontWeight="SemiBold" Margin="8,8,8,0" TextTrimming="CharacterEllipsis"/>
+
+                                <DockPanel Margin="8,4">
+                                    <TextBlock Text="{Binding Rating}" Foreground="{DynamicResource AccentBrush}" FontWeight="Bold" FontSize="12"/>
+                                    <TextBlock Text="{Binding Genre}" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" HorizontalAlignment="Right"/>
+                                </DockPanel>
+
+                                <Grid Margin="8,0,8,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button Grid.Column="0" Content="İncele" Height="30" Margin="0,0,5,0"
+                                            Background="{DynamicResource BorderBrush}" Foreground="{DynamicResource PrimaryTextBrush}" 
+                                            BorderThickness="0"
+                                            Command="{Binding DataContext.GoToDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding Id}">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="5"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+
+                                    <Button Grid.Column="1" Content="🗑️" Width="30" Height="30"
+                                            Background="#33FF0000" Foreground="Red" BorderThickness="0"
+                                            ToolTip="Listeden Kaldır"
+                                            Command="{Binding DataContext.RemoveGameCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding Id}">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="5"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

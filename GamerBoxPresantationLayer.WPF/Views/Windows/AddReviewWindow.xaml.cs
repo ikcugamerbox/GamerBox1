@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace GamerBoxPresantationLayer.WPF
 {
@@ -55,6 +56,18 @@ namespace GamerBoxPresantationLayer.WPF
             {
                 MessageBox.Show("Hata: " + ex.Message);
             }
+        }
+        
+
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+                this.DragMove();
+        }
+
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

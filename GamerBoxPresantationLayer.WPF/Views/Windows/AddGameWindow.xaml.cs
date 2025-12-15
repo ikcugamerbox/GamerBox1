@@ -1,5 +1,6 @@
 ﻿using GamerBoxPresantationLayer.WPF.ViewModels;
 using System.Windows;
+using System.Windows.Input;
 
 namespace GamerBoxPresantationLayer.WPF
 {
@@ -23,7 +24,16 @@ namespace GamerBoxPresantationLayer.WPF
         {
             ViewModel.SetUserId(userId);
         }
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+                this.DragMove();
+        }
 
-    
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
     }
 }

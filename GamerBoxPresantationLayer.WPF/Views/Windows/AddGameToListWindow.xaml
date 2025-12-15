@@ -1,0 +1,65 @@
+﻿<Window x:Class="GamerBoxPresantationLayer.WPF.AddGameToListWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Listeye Ekle" Height="300" Width="350"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        
+        AllowsTransparency="True" 
+        Background="Transparent"
+        WindowStyle="None"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+
+    <Border Background="{DynamicResource MainBackgroundBrush}" 
+            BorderBrush="{DynamicResource AccentBrush}" 
+            BorderThickness="1" 
+            CornerRadius="10">
+
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="15" ShadowDepth="5" Opacity="0.5"/>
+        </Border.Effect>
+
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="0,0,0,20">
+                <TextBlock Text="Listeye Ekle" Foreground="{DynamicResource AccentBrush}" 
+                           FontSize="18" FontWeight="Bold" 
+                           VerticalAlignment="Center" HorizontalAlignment="Left"/>
+
+                <Button Style="{StaticResource MiniButtons}" 
+        Content="&#xE8BB;" 
+        Click="btnClose_Click"
+        HorizontalAlignment="Right" 
+        VerticalAlignment="Top"
+        ToolTip="Kapat"/>
+            </Grid>
+
+            <StackPanel Grid.Row="1" VerticalAlignment="Center">
+                <TextBlock Text="Hangi listeye eklensin?" Foreground="{DynamicResource PrimaryTextBrush}" 
+                           Margin="0,0,0,10" Opacity="0.8"/>
+
+                <ComboBox x:Name="cmbLists" Style="{StaticResource ModernComboBox}" Height="40" DisplayMemberPath="Name" SelectedValuePath="Id"
+                          Background="{DynamicResource InputBackgroundBrush}" 
+                          Foreground="{DynamicResource PrimaryTextBrush}" Padding="10,0" VerticalContentAlignment="Center">
+                    <ComboBox.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="5"/>
+                        </Style>
+                    </ComboBox.Resources>
+                </ComboBox>
+
+                <Button x:Name="btnAdd" Content="KAYDET" Click="btnAdd_Click" Height="45" Margin="0,25,0,0"
+                        Background="{DynamicResource AccentBrush}" Foreground="White" FontWeight="Bold" FontSize="14">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="5"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

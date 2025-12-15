@@ -45,7 +45,7 @@
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <Image Source="/Resources/treasure-chest.png" Stretch="Uniform" Margin="10"/>
+                                <Image Source="{Binding Poster}" Stretch="Uniform" Margin="10"/>
 
                                 <Border Grid.Row="1" Background="{DynamicResource PanelBackgroundBrush}" 
                                         Padding="5" CornerRadius="0,0,8,8">

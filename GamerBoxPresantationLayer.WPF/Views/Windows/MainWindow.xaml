@@ -68,7 +68,7 @@
                     <Button Content="Home" x:Name="btnHome" Click="btnHomeClick" Style="{DynamicResource MenuButtons}"/>
                     <Button Content="Reviews" x:Name="btnRvs" Click="btnRvsClick" Style="{DynamicResource MenuButtons}" />
                     <Button Content="Lists" x:Name="btnlist" Click="btnListClick" Style="{DynamicResource MenuButtons}" />
-                    <Button Content="Watchlist" x:Name="btnWtList" Click="btnWtListClick" Style="{DynamicResource MenuButtons}"/>
+                    <Button Content="Library" x:Name="btnWtList" Click="btnWtListClick" Style="{DynamicResource MenuButtons}"/>
                     <Button Content="Profile" x:Name="btnProfile" Click="btnProfileClick" Style="{DynamicResource MenuButtons}"/>
                 </StackPanel>
 

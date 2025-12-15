@@ -1,25 +1,31 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GamerBox.BusinessLayer.Abstract;
-using GamerBoxPresantationLayer.WPF.Models; // Modeli buradan çekiyoruz
+using GamerBoxPresantationLayer.WPF.Models; 
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace GamerBoxPresantationLayer.WPF.ViewModels
 {
     public partial class ListsViewModel : ObservableObject
     {
         private readonly IGameService _gameService;
+        private readonly IUserListService _userListService;
 
-        [ObservableProperty]
-        private bool isGuest = true;
+        [ObservableProperty] private bool isGuest = true;
+        [ObservableProperty] private string newListName = "";
+        [ObservableProperty] private bool isLoggedIn = false;
+
 
         public ObservableCollection<GameDisplayModel> TopRatedGames { get; } = new ObservableCollection<GameDisplayModel>();
         public ObservableCollection<GameDisplayModel> RecommendedGames { get; } = new ObservableCollection<GameDisplayModel>();
+        public ObservableCollection<UserListDisplayModel> MyCustomLists { get; } = new ObservableCollection<UserListDisplayModel>();
 
-        public ListsViewModel(IGameService gameService)
+        public ListsViewModel(IGameService gameService, IUserListService userListService)
         {
             _gameService = gameService;
+            _userListService = userListService;
         }
 
         // Kullanıcı ID'sini parametre olarak alıyoruz (Giriş yapmamışsa null gelir)
@@ -66,6 +72,43 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
             else
             {
                 IsGuest = true;
+            }
+            // Özel Listeleri Yükle
+            MyCustomLists.Clear();
+            if (userId.HasValue)
+            {
+                var entityLists = await _userListService.GetUserListsAsyncB(userId.Value);
+                foreach (var entity in entityLists)
+                {
+                    // 2. Entity -> Model Dönüşümü (MAPPING)
+                    MyCustomLists.Add(new UserListDisplayModel
+                    {
+                        Id = entity.Id,
+                        Name = entity.Name,
+                        GameCount = entity.Games?.Count ?? 0
+                    });
+                }
+            }
+        }
+        [RelayCommand]
+        public async Task CreateNewListAsync()
+        {
+            var mainWin = Application.Current.MainWindow as MainWindow;
+            if (mainWin?.CurrentUser == null) return;
+
+            if (!string.IsNullOrWhiteSpace(NewListName))
+            {
+                try
+                {
+                    await _userListService.CreateListAsyncB(mainWin.CurrentUser.Id, NewListName);
+                    NewListName = ""; // Kutuyu temizle
+                    CustomMessageBox.Show("Liste oluşturuldu!", "Başarılı");
+                    await LoadDataAsync(mainWin.CurrentUser.Id); // Listeyi yenile
+                }
+                catch (System.Exception ex)
+                {
+                    CustomMessageBox.Show(ex.Message, "Hata");
+                }
             }
         }
     }

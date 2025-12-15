@@ -28,6 +28,7 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
 
         // Post Listesi
         public ObservableCollection<PostDisplayModel> UserPosts { get; } = new ObservableCollection<PostDisplayModel>();
+        public ObservableCollection<UserDisplayModel> FollowersList { get; } = new ObservableCollection<UserDisplayModel>();
 
         public ProfileViewModel(IUserService userService, IPostService postService)
         {
@@ -86,6 +87,20 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
                 // Hatayı ekrana bas (Bu sayede output penceresindeki hatanın sebebini göreceğiz)
                 System.Windows.MessageBox.Show($"Profil yüklenirken hata oluştu:\n{ex.Message}\n\nDetay: {ex.InnerException?.Message}", "Hata");
             }
+            /*
+    var followers = await _userService.GetFollowersAsyncB(userId);
+    FollowersList.Clear();
+    foreach(var f in followers)
+    {
+        FollowersList.Add(new UserDisplayModel 
+        {
+            Id = f.Id,
+            Username = f.Username,
+            ProfilePictureUrl = f.ProfilePictureUrl,
+            Bio = f.Bio
+        });
+    }
+*/
 
         }
 
