@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GamerBox.BusinessLayer.Abstract;
-using GamerBoxPresantationLayer.WPF.Models; // Modeli buradan çekiyoruz
+using GamerBoxPresantationLayer.WPF.Models;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -14,30 +14,20 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
     public partial class HomeViewModel : ObservableObject
     {
         private readonly IGameService _gameService;
-        private List<GamerBox.EntitiesLayer.Concrete.Game> _allGames; // Ham veri
+
 
         // --- Özellikler (Properties) ---
         // [ObservableProperty] attribute'u sayesinde arka planda 
         // "SearchText" propertysini ve değişim bildirimlerini otomatik oluşturur.
 
-        [ObservableProperty]
-        private string searchText;
+        [ObservableProperty] private string searchText="";
+        [ObservableProperty] private string selectedGenre = "Tümü";
+        [ObservableProperty] private int selectedRatingIndex = 0;
+        [ObservableProperty] private int selectedPriceIndex = 0;
+        [ObservableProperty] private int selectedSortIndex = 0;
+        [ObservableProperty] private string resultCountText;
 
-        [ObservableProperty]
-        private string selectedGenre = "Tümü";
-
-        [ObservableProperty]
-        private int selectedRatingIndex = 0;
-
-        [ObservableProperty]
-        private int selectedPriceIndex = 0;
-
-        [ObservableProperty]
-        private int selectedSortIndex = 0;
-
-        [ObservableProperty]
-        private string resultCountText;
-
+        // ComboBox ve ListBox kaynakları
         public ObservableCollection<string> GenreList { get; } = new ObservableCollection<string>();
         public ObservableCollection<GameDisplayModel> FilteredGames { get; } = new ObservableCollection<GameDisplayModel>();
 
@@ -53,69 +43,47 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
         {
             if (_gameService == null) return;
 
-            _allGames = await _gameService.GetAllGamesAsyncB();
-
-            // Türleri doldur
-            var genres = _allGames.Select(g => g.Genre).Distinct().OrderBy(g => g).ToList();
-            GenreList.Clear();
-            GenreList.Add("Tümü");
-            foreach (var genre in genres)
+            // 1. TURLERİ VERİTABANINDAN ÇEK (Sadece 1 kere yapılır)
+            // Eğer liste zaten doluysa tekrar çekmeye gerek yok (Performans)
+            if (GenreList.Count == 0)
             {
-                GenreList.Add(genre);
+                var genres = await _gameService.GetGenresAsyncB();
+
+                GenreList.Clear();
+                GenreList.Add("Tümü"); // Varsayılan seçenek
+                foreach (var genre in genres)
+                {
+                    GenreList.Add(genre);
+                }
             }
 
-            ApplyFilters();
+            // 2. OYUNLARI VERİTABANINDAN FİLTRELEYEREK ÇEK
+            await ApplyFilters();
         }
 
-        // Özellikler değiştiğinde otomatik filtreleme yapması için tetikleyici metodlar
-        // CommunityToolkit.Mvvm isimlendirme kuralı: On[Property]Changed
-        partial void OnSearchTextChanged(string value) => ApplyFilters();
-        partial void OnSelectedGenreChanged(string value) => ApplyFilters();
-        partial void OnSelectedRatingIndexChanged(int value) => ApplyFilters();
-        partial void OnSelectedPriceIndexChanged(int value) => ApplyFilters();
-        partial void OnSelectedSortIndexChanged(int value) => ApplyFilters();
+        // Property'ler her değiştiğinde filtrelemeyi otomatik tetikle
+        partial void OnSearchTextChanged(string value) => _ = ApplyFilters();
+        partial void OnSelectedGenreChanged(string value) => _ = ApplyFilters();
+        partial void OnSelectedRatingIndexChanged(int value) => _ = ApplyFilters();
+        partial void OnSelectedPriceIndexChanged(int value) => _ = ApplyFilters();
+        partial void OnSelectedSortIndexChanged(int value) => _ = ApplyFilters();
 
-        // Filtreleme Mantığı (Eski kodunun aynısı)
         [RelayCommand]
-        private void ApplyFilters()
+        private async Task ApplyFilters()
         {
-            if (_allGames == null) return;
+            // Veritabanına parametreleri gönderiyoruz, SQL orada çalışıp sadece sonucu dönüyor.
+            var resultList = await _gameService.GetFilteredGamesAsyncB(
+                SearchText,
+                SelectedGenre,
+                SelectedRatingIndex,
+                SelectedPriceIndex,
+                SelectedSortIndex
+            );
 
-            var query = _allGames.AsEnumerable();
-
-            // 1. Metin Arama
-            if (!string.IsNullOrWhiteSpace(SearchText))
-            {
-                query = query.Where(g => g.Title.ToLower().Contains(SearchText.ToLower()));
-            }
-
-            // 2. Tür Filtresi
-            if (!string.IsNullOrEmpty(SelectedGenre) && SelectedGenre != "Tümü")
-            {
-                query = query.Where(g => g.Genre == SelectedGenre);
-            }
-
-            // 3. Puan Filtresi
-            if (SelectedRatingIndex == 1) query = query.Where(g => (g.AverageRating ?? 0) >= 4);
-            else if (SelectedRatingIndex == 2) query = query.Where(g => (g.AverageRating ?? 0) >= 3);
-            else if (SelectedRatingIndex == 3) query = query.Where(g => (g.AverageRating ?? 0) >= 2);
-
-            // 4. Fiyat Filtresi
-            if (SelectedPriceIndex == 1) query = query.Where(g => g.Price == 0);
-            else if (SelectedPriceIndex == 2) query = query.Where(g => g.Price > 0);
-
-            // 5. Sıralama
-            switch (SelectedSortIndex)
-            {
-                case 1: query = query.OrderByDescending(g => g.ReleaseDate); break;
-                case 2: query = query.OrderByDescending(g => g.AverageRating ?? 0); break;
-                case 3: query = query.OrderBy(g => g.Price); break;
-                default: query = query.OrderBy(g => g.Title); break;
-            }
-
-            var resultList = query.ToList();
+            // Sonuç sayısını güncelle
             ResultCountText = $"{resultList.Count} oyun bulundu.";
 
+            // UI Listesini Temizle ve Doldur (Entity -> Model Dönüşümü)
             FilteredGames.Clear();
             foreach (var g in resultList)
             {
@@ -126,7 +94,9 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
                     Genre = g.Genre,
                     Rating = g.AverageRating.HasValue ? g.AverageRating.Value.ToString("0.0") : "N/A",
                     Year = g.ReleaseDate.Year.ToString(),
+                    // Resim yoksa varsayılan resmi kullan
                     Poster = string.IsNullOrEmpty(g.ImageUrl) ? "/Resources/treasure-chest.png" : g.ImageUrl,
+                    // Fiyat formatlama
                     PriceTag = g.Price == 0 ? "Ücretsiz" : $"{g.Price:0.##} ₺"
                 });
             }

@@ -7,20 +7,85 @@
              d:DesignHeight="600" d:DesignWidth="800">
 
     <Grid Background="{DynamicResource MainBackgroundBrush}">
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
+  
         <Border Grid.Row="0" Margin="20" Background="{DynamicResource CardBackgroundBrush}" 
                 CornerRadius="15" Padding="20">
             <DockPanel>
-                <Border Width="80" Height="80" CornerRadius="40" 
-                        Background="{DynamicResource BorderBrush}" Margin="0,0,20,0" DockPanel.Dock="Left">
-                    <TextBlock Text="👤" FontSize="40" 
-                               HorizontalAlignment="Center" VerticalAlignment="Center" 
-                               Foreground="{DynamicResource SecondaryTextBrush}"/>
-                </Border>
+                <StackPanel DockPanel.Dock="Left" Margin="0,0,20,0" VerticalAlignment="Top">
+
+                    <Button Click="ProfileImage_Click" Cursor="Hand" Background="Transparent" BorderThickness="0">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <ContentPresenter/>
+                            </ControlTemplate>
+                        </Button.Template>
+
+                        <Button.ContextMenu>
+                            <ContextMenu x:Name="ProfileMenu" HasDropShadow="True" FontSize="14">
+                                <ContextMenu.Style>
+                                    <Style TargetType="ContextMenu">
+                                        <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                                        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="Padding" Value="5"/>
+                                    </Style>
+                                </ContextMenu.Style>
+
+                                <MenuItem Header="Fotoğrafı Değiştir" Command="{Binding ChangeProfilePictureCommand}" 
+              Background="{DynamicResource CardBackgroundBrush}" 
+              Foreground="{DynamicResource PrimaryTextBrush}">
+                                    <MenuItem.Icon>
+                                        <TextBlock Text="📷"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+
+                                <MenuItem Header="Mevcut Fotoğrafı Kaldır" Command="{Binding RemoveProfilePictureCommand}" 
+              Foreground="#FF5555"
+              Background="{DynamicResource CardBackgroundBrush}">
+                                    <MenuItem.Icon>
+                                        <TextBlock Text="🗑️"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
+                        </Button.ContextMenu>
+
+                        <Border Width="100" Height="100" CornerRadius="50" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="2">
+                            <Border.Background>
+                                <ImageBrush ImageSource="{Binding ProfilePictureUrl}" Stretch="UniformToFill"/>
+                            </Border.Background>
+
+                            <Grid>
+                                <TextBlock Text="👤" FontSize="50" 
+                           HorizontalAlignment="Center" VerticalAlignment="Center" 
+                           Foreground="{DynamicResource SecondaryTextBrush}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ProfilePictureUrl}" Value="">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ProfilePictureUrl}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Grid>
+                        </Border>
+                    </Button>
+
+                    <TextBlock Text="Düzenlemek için tıklayın" FontSize="10" Foreground="{DynamicResource MutedTextBrush}" 
+               HorizontalAlignment="Center" Margin="0,5,0,0"/>
+
+                </StackPanel>
 
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock Text="{Binding Username}" FontSize="24" FontWeight="Bold" 

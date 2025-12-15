@@ -3,7 +3,7 @@ using GamerBox.EntitiesLayer.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography; // BU KÜTÜPHANE ÖNEMLİ
+using System.Security.Cryptography;
 using System.Text;
 
 namespace GamerBox.DataAccessLayer.Dataseeds
@@ -12,29 +12,24 @@ namespace GamerBox.DataAccessLayer.Dataseeds
     {
         public static void Initialize(GamerBoxContext context)
         {
-            // Veritabanı zaten doluysa işlem yapma
             if (context.Users.Any()) return;
 
-            // --- UserManager'daki Güvenli Şifreleme Mantığının Aynısı ---
             string HashPass(string password)
             {
                 using var rng = RandomNumberGenerator.Create();
                 var salt = new byte[16];
                 rng.GetBytes(salt);
-
                 using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 100000, HashAlgorithmName.SHA256);
                 var key = pbkdf2.GetBytes(32);
-
                 return $"{Convert.ToBase64String(salt)}.{Convert.ToBase64String(key)}";
             }
-            // ------------------------------------------------------------
 
             // 1. KULLANICILAR
             var user1 = new User
             {
                 Username = "Eren",
                 Email = "eren@gamerbox.com",
-                PasswordHash = HashPass("123456"), // Artık doğru formatta şifrelenecek
+                PasswordHash = HashPass("123456"),
                 Bio = "Full-stack developer ve hardcore oyuncu.",
                 CreatedAtUtc = DateTime.UtcNow,
                 ThemePreference = "dark",
@@ -115,7 +110,8 @@ namespace GamerBox.DataAccessLayer.Dataseeds
             context.Ratings.AddRange(ratings);
             context.SaveChanges();
 
-            // 4. GÖNDERİLER
+            // 4. GÖNDERİLER (DÜZELTİLEN KISIM)
+            // Artık string listesi değil, Hashtag nesnesi oluşturuyoruz.
             var posts = new List<Post>
             {
                 new Post
@@ -123,7 +119,11 @@ namespace GamerBox.DataAccessLayer.Dataseeds
                     UserId = user1.Id,
                     GameId = games[0].Id,
                     Content = "Witcher 3 hala oynadığım en iyi oyun! #rpg #masterpiece",
-                    Hashtags = new List<string> { "rpg", "masterpiece" },
+                    Hashtags = new List<Hashtag>
+                    {
+                        new Hashtag { Tag = "rpg" },
+                        new Hashtag { Tag = "masterpiece" }
+                    },
                     CreatedAt = DateTime.Now.AddDays(-2),
                     CreatedAtUtc = DateTime.UtcNow.AddDays(-2)
                 },
@@ -132,7 +132,11 @@ namespace GamerBox.DataAccessLayer.Dataseeds
                     UserId = user2.Id,
                     GameId = games[2].Id,
                     Content = "Valorant'ta bugün harika bir maç attık. #fps #valorant",
-                    Hashtags = new List<string> { "fps", "valorant" },
+                    Hashtags = new List<Hashtag>
+                    {
+                        new Hashtag { Tag = "fps" },
+                        new Hashtag { Tag = "valorant" }
+                    },
                     CreatedAt = DateTime.Now.AddHours(-5),
                     CreatedAtUtc = DateTime.UtcNow.AddHours(-5)
                 },
@@ -141,7 +145,11 @@ namespace GamerBox.DataAccessLayer.Dataseeds
                     UserId = user1.Id,
                     GameId = games[3].Id,
                     Content = "Bu oyun gerçekten çok zor ama bir o kadar da keyifli. #souls #hardcore",
-                    Hashtags = new List<string> { "souls", "hardcore" },
+                    Hashtags = new List<Hashtag>
+                    {
+                        new Hashtag { Tag = "souls" },
+                        new Hashtag { Tag = "hardcore" }
+                    },
                     CreatedAt = DateTime.Now,
                     CreatedAtUtc = DateTime.UtcNow
                 }

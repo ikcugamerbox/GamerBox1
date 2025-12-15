@@ -11,11 +11,13 @@ namespace GamerBox.BusinessLayer.Concrete
     public class PostManager : IPostService
     {
         private readonly IPostDal _postDal;
+        private readonly IHashtagService _hashtagService;
         private const int MaxLength = 280;
 
-        public PostManager(IPostDal postDal)
+        public PostManager(IPostDal postDal, IHashtagService hashtagService)
         {
             _postDal = postDal;
+            _hashtagService = hashtagService;
         }
 
         // --- IGenericService İmplementasyonları ---
@@ -53,16 +55,17 @@ namespace GamerBox.BusinessLayer.Concrete
         {
             ValidatePostContent(content);
 
-            var hashtags = ExtractHashtags(content);
+            var tagStrings = ExtractHashtags(content);
+            var hashtagEntities = await _hashtagService.GetOrCreateHashtagsAsyncB(tagStrings);
 
             var post = new Post
             {
                 UserId = userId,
                 GameId = gameId,
                 Content = content.Trim(),
-                Hashtags = hashtags, // List<string> olarak atanıyor
                 CreatedAt = DateTime.Now, // CreatedAtUtc yerine CreatedAt kullandım (Entity ile uyumlu olsun diye)
-                CreatedAtUtc = DateTime.UtcNow // Entity'de ikisi de varsa ikisini de doldurabiliriz
+                CreatedAtUtc = DateTime.UtcNow, // Entity'de ikisi de varsa ikisini de doldurabiliriz
+                Hashtags = hashtagEntities
             };
 
             await _postDal.AddAsync(post);

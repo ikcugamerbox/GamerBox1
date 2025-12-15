@@ -18,16 +18,12 @@ namespace GamerBox.DataAccessLayer.Context
         public DbSet<Post> Posts { get; set; }
         public DbSet<Rating> Ratings { get; set; }
 
+        public DbSet<UserList> UserLists { get; set; }
+        public DbSet<Hashtag> Hashtags { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Post>()
-        .HasOne(p => p.User)
-        .WithMany(u => u.Posts)
-        .HasForeignKey(p => p.UserId)
-        .OnDelete(DeleteBehavior.Restrict);
-
-          
-     
+         
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(GamerBoxContext).Assembly);
             base.OnModelCreating(modelBuilder);
         }

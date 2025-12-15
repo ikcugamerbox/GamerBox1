@@ -15,7 +15,7 @@ namespace GamerBox.EntitiesLayer.Concrete
         public int? GameId { get; set; }
 
         public Game? Game { get; set; }
-        public List<string> Hashtags { get; set; }
+        public ICollection<Hashtag> Hashtags { get; set; } = new List<Hashtag>();
 
         public DateTime CreatedAtUtc { get; set; }
 

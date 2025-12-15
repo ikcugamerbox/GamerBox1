@@ -1,0 +1,124 @@
+﻿<UserControl x:Class="GamerBoxPresantationLayer.WPF.Views.UserControls.UCGameDetail"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="1000">
+
+    <Grid Background="{DynamicResource MainBackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Button Command="{Binding GoBackCommand}" HorizontalAlignment="Left" Margin="20,10"
+                Background="Transparent" BorderThickness="0" Foreground="{DynamicResource SecondaryTextBrush}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="⬅" FontSize="16" Margin="0,0,5,0"/>
+                <TextBlock Text="Geri Dön" FontSize="14" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Button>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="20,0,20,20">
+
+                <Grid Margin="0,0,0,30">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="300"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border CornerRadius="10" ClipToBounds="True" Height="400" Background="#111">
+                        <Image Source="{Binding ImageUrl}" Stretch="UniformToFill"/>
+                    </Border>
+
+                    <StackPanel Grid.Column="1" Margin="30,0,0,0">
+                        <TextBlock Text="{Binding Title}" FontSize="36" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" TextWrapping="Wrap"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,10">
+                            <Border Background="{DynamicResource AccentBrush}" CornerRadius="5" Padding="10,5">
+                                <TextBlock Text="{Binding Genre}" Foreground="White" FontWeight="Bold"/>
+                            </Border>
+                            <TextBlock Text="{Binding RatingText, StringFormat='⭐ {0}'}" VerticalAlignment="Center" Margin="15,0" Foreground="#FFD700" FontSize="18"/>
+                        </StackPanel>
+
+                        <TextBlock Text="{Binding PriceText}" FontSize="24" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" Margin="0,10,0,20"/>
+
+                        <TextBlock Text="Oyun Hakkında" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource SecondaryTextBrush}" Margin="0,0,0,5"/>
+                        <TextBlock Text="{Binding Description}" FontSize="15" Foreground="{DynamicResource PrimaryTextBrush}" TextWrapping="Wrap" Opacity="0.9" LineHeight="24"/>
+                    </StackPanel>
+                </Grid>
+
+                <Separator Background="{DynamicResource BorderBrush}" Margin="0,0,0,30"/>
+
+                <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="10" Padding="20" Margin="0,0,0,30">
+                    <StackPanel>
+                        <TextBlock Text="İnceleme Yaz ✍️" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" Margin="0,0,0,15"/>
+
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Puanınız:" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,10,0"/>
+                            <ComboBox SelectedIndex="{Binding NewRatingScore}" Style="{StaticResource ModernComboBox}" Width="150" HorizontalAlignment="Left" Grid.Column="1">
+                                <ComboBoxItem Content="1 - Kötü"/>
+                                <ComboBoxItem Content="2 - Eh"/>
+                                <ComboBoxItem Content="3 - Orta"/>
+                                <ComboBoxItem Content="4 - İyi"/>
+                                <ComboBoxItem Content="5 - Efsane"/>
+                            </ComboBox>
+                        </Grid>
+
+                        <TextBox Text="{Binding NewCommentContent}" Height="80" 
+                                 Style="{DynamicResource TextboxStyle}"
+                                 TextWrapping="Wrap" AcceptsReturn="True" 
+                                 VerticalContentAlignment="Top" Padding="10"
+                                 Tag="Bu oyun hakkında ne düşünüyorsun?"/>
+
+                        <Button Command="{Binding SubmitReviewCommand}" Content="YAYINLA" 
+                                HorizontalAlignment="Right" Width="120" Height="35" Margin="0,15,0,0"
+                                Background="{DynamicResource AccentBrush}" Foreground="White" FontWeight="Bold">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="5"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                    </StackPanel>
+                </Border>
+
+                <TextBlock Text="Oyuncu Yorumları" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,0,0,15"/>
+
+                <ItemsControl ItemsSource="{Binding Reviews}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="10" Margin="0,0,0,15" Padding="15">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Width="40" Height="40" CornerRadius="20" Background="#333" VerticalAlignment="Top">
+                                        <TextBlock Text="👤" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"/>
+                                    </Border>
+
+                                    <StackPanel Grid.Column="1" Margin="15,0,0,0">
+                                        <DockPanel Margin="0,0,0,5">
+                                            <TextBlock Text="{Binding UserName}" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"/>
+                                            <TextBlock Text="{Binding DateStr}" DockPanel.Dock="Right" Foreground="{DynamicResource MutedTextBrush}" FontSize="12"/>
+                                        </DockPanel>
+                                        <TextBlock Text="{Binding Content}" Foreground="{DynamicResource PrimaryTextBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

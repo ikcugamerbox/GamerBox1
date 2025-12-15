@@ -31,12 +31,12 @@ namespace GamerBox.DataAccessLayer.EntityFramework
         }
         public List<Post> GetPostsByHashtag(string hashtag)
         {
-            // Hashtag arama (Basit string contains veya list check)
-            // Performans için veritabanında normalize etmek daha iyidir ama şimdilik bu yeterli
             return _context.Posts
-                .Where(p => p.Hashtags.Contains(hashtag)) // Veritabanı tarafında bu sorgu LINQ ile her zaman düzgün çalışmayabilir, client evaluation gerekebilir.
-                .OrderByDescending(p => p.CreatedAt)
-                .ToList();
+        .Include(p => p.Hashtags) // İlişkiyi dahil et
+        .Where(p => p.Hashtags.Any(h => h.Tag == hashtag)) // "Herhangi bir etiketi aranan kelimeye eşit mi?"
+        .OrderByDescending(p => p.CreatedAt)
+        .ToList();
+        
         }
 
         public async Task<List<Post>> GetRecentPostsAsync(int count)

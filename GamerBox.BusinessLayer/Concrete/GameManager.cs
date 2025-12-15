@@ -1,8 +1,11 @@
 ﻿using GamerBox.BusinessLayer.Abstract;
 using GamerBox.DataAccessLayer.Abstract;
+using GamerBox.DataAccessLayer.EntityFramework;
 using GamerBox.EntitiesLayer.Concrete;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace GamerBox.BusinessLayer.Concrete
@@ -93,5 +96,9 @@ namespace GamerBox.BusinessLayer.Concrete
             //               .ToList
             return await _gameDal.GetByGenresAsync(preferredCategories, count);
         }
+
+        public async Task<List<Game>> GetFilteredGamesAsyncB(string searchText, string genre, int minRating, int priceFilter, int sortOrder) => await _gameDal.GetFilteredGamesAsync(searchText, genre, minRating, priceFilter, sortOrder);
+        public async Task<List<string>> GetGenresAsyncB() => await _gameDal.GetGenresAsync();
     }
+
 }

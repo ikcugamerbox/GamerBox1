@@ -22,6 +22,21 @@ namespace GamerBox.DataAccessLayer.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("GameUserList", b =>
+                {
+                    b.Property<int>("GamesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserListId")
+                        .HasColumnType("int");
+
+                    b.HasKey("GamesId", "UserListId");
+
+                    b.HasIndex("UserListId");
+
+                    b.ToTable("GameUserList");
+                });
+
             modelBuilder.Entity("GamerBox.EntitiesLayer.Concrete.Game", b =>
                 {
                     b.Property<int>("Id")
@@ -69,6 +84,23 @@ namespace GamerBox.DataAccessLayer.Migrations
                     b.ToTable("Games");
                 });
 
+            modelBuilder.Entity("GamerBox.EntitiesLayer.Concrete.Hashtag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Tag")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Hashtags");
+                });
+
             modelBuilder.Entity("GamerBox.EntitiesLayer.Concrete.Post", b =>
                 {
                     b.Property<int>("Id")
@@ -90,10 +122,6 @@ namespace GamerBox.DataAccessLayer.Migrations
 
                     b.Property<int?>("GameId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Hashtags")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -173,6 +201,10 @@ namespace GamerBox.DataAccessLayer.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("ProfilePictureUrl")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
                     b.Property<string>("ThemePreference")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -191,6 +223,47 @@ namespace GamerBox.DataAccessLayer.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("GamerBox.EntitiesLayer.Concrete.UserList", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserLists");
+                });
+
+            modelBuilder.Entity("HashtagPost", b =>
+                {
+                    b.Property<int>("HashtagsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PostsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("HashtagsId", "PostsId");
+
+                    b.HasIndex("PostsId");
+
+                    b.ToTable("PostHashtags", (string)null);
+                });
+
             modelBuilder.Entity("UserFollowers", b =>
                 {
                     b.Property<int>("FollowerId")
@@ -204,6 +277,21 @@ namespace GamerBox.DataAccessLayer.Migrations
                     b.HasIndex("FollowingId");
 
                     b.ToTable("UserFollowers");
+                });
+
+            modelBuilder.Entity("GameUserList", b =>
+                {
+                    b.HasOne("GamerBox.EntitiesLayer.Concrete.Game", null)
+                        .WithMany()
+                        .HasForeignKey("GamesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GamerBox.EntitiesLayer.Concrete.UserList", null)
+                        .WithMany()
+                        .HasForeignKey("UserListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("GamerBox.EntitiesLayer.Concrete.Game", b =>
@@ -252,6 +340,32 @@ namespace GamerBox.DataAccessLayer.Migrations
                     b.Navigation("Game");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("GamerBox.EntitiesLayer.Concrete.UserList", b =>
+                {
+                    b.HasOne("GamerBox.EntitiesLayer.Concrete.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HashtagPost", b =>
+                {
+                    b.HasOne("GamerBox.EntitiesLayer.Concrete.Hashtag", null)
+                        .WithMany()
+                        .HasForeignKey("HashtagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GamerBox.EntitiesLayer.Concrete.Post", null)
+                        .WithMany()
+                        .HasForeignKey("PostsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("UserFollowers", b =>

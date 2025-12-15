@@ -1,4 +1,6 @@
-﻿using GamerBoxPresantationLayer.WPF.ViewModels;
+﻿using GamerBoxPresantationLayer.WPF.Models; 
+using GamerBoxPresantationLayer.WPF.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -13,13 +15,11 @@ namespace GamerBoxPresantationLayer.WPF.Views.UserControls
             InitializeComponent();
             ViewModel = viewModel;
             this.DataContext = ViewModel;
-
             this.Loaded += UCLists_Loaded;
         }
 
         private async void UCLists_Loaded(object sender, RoutedEventArgs e)
         {
-            // Kullanıcı ID'sini MainWindow'dan alıp ViewModel'e veriyoruz
             var mainWin = Application.Current.MainWindow as MainWindow;
             int? userId = null;
 
@@ -29,6 +29,29 @@ namespace GamerBoxPresantationLayer.WPF.Views.UserControls
             }
 
             await ViewModel.LoadDataAsync(userId);
+        }
+        private void BtnOpenList_Click(object sender, RoutedEventArgs e)
+        {
+            // 1. Tıklanan butonu ve içindeki veriyi (Tag) alıyoruz
+            if (sender is Button btn && btn.Tag is UserListDisplayModel listModel)
+            {
+                var mainWin = Application.Current.MainWindow as MainWindow;
+
+                if (mainWin != null && mainWin.CurrentUser != null)
+                {
+                    // 2. Detay Sayfasını Servisten İste
+                    var detailsPage = App.ServiceProvider.GetService<UCListDetails>();
+
+                    if (detailsPage != null)
+                    {
+                        // 3. Sayfayı Başlat (Verileri Yükle)
+                        detailsPage.Initialize(listModel.Id, mainWin.CurrentUser.Id, listModel.Name);
+
+                        // 4. Ana Pencerede Sayfayı Değiştir (Navigasyon)
+                        mainWin.MainContent.Content = detailsPage;
+                    }
+                }
+            }
         }
     }
 }

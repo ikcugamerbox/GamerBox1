@@ -20,6 +20,7 @@ namespace GamerBox.DataAccessLayer.Abstract
         Task<List<Game>> GetByRatingAsync(int count);
         Task<List<Game>> GetByGenresAsync(List<string> genres, int count);
 
-
+        Task<List<Game>> GetFilteredGamesAsync(string searchText, string genre, int minRating, int priceFilter, int sortOrder);
+        Task<List<string>> GetGenresAsync();
     }
 }

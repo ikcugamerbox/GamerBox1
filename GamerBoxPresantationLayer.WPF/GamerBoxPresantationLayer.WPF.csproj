@@ -3,13 +3,13 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
+    <ApplicationIcon>Resources\treasure-chest.ico</ApplicationIcon>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\treasure-chest.ico" />
     <None Remove="Resources\treasure-chest.png" />
   </ItemGroup>
 
@@ -18,15 +18,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Assests\" />
     <Folder Include="Converters\" />
     <Folder Include="Commands\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\treasure-chest.ico">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
+    <Resource Include="Resources\treasure-chest.ico" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
       <PrivateAssets>all</PrivateAssets>
@@ -39,6 +36,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+    <Page Include="App.xaml" />
     <Resource Include="Resources\treasure-chest.png" />
   </ItemGroup>
 

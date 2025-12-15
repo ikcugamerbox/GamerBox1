@@ -27,10 +27,31 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <Border Width="40" Height="40" CornerRadius="20" 
-                                        Background="{DynamicResource BorderBrush}" VerticalAlignment="Top">
-                                    <TextBlock Text="👤" Foreground="{DynamicResource SecondaryTextBrush}" 
-                                               HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"/>
+                                <Border Width="45" Height="45" CornerRadius="25" 
+        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" 
+        VerticalAlignment="Top" Margin="0,5,0,0">
+                                    <Border.Background>
+                                        <ImageBrush ImageSource="{Binding ProfilePictureUrl}" Stretch="UniformToFill"/>
+                                    </Border.Background>
+
+                                    <Grid>
+                                        <TextBlock Text="👤" Foreground="{DynamicResource SecondaryTextBrush}" 
+                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ProfilePictureUrl}" Value="">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding ProfilePictureUrl}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Grid>
                                 </Border>
 
                                 <StackPanel Grid.Column="1" Margin="10,0,0,0">

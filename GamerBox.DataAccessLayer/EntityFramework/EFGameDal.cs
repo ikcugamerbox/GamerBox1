@@ -88,5 +88,54 @@ namespace GamerBox.DataAccessLayer.EntityFramework
                 .Take(5)
                 .ToList();
         }
+        public async Task<List<Game>> GetFilteredGamesAsync(string searchText, string genre, int minRating, int priceFilter, int sortOrder)
+        {
+            // Sorguyu başlatıyoruz (Henüz veritabanına gitmedi)
+            var query = _context.Games.AsQueryable();
+
+            // 1. Arama Metni Filtresi
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                query = query.Where(g => g.Title.Contains(searchText));
+            }
+
+            // 2. Tür Filtresi
+            if (!string.IsNullOrEmpty(genre) && genre != "Tümü")
+            {
+                query = query.Where(g => g.Genre == genre);
+            }
+
+            // 3. Puan Filtresi (minRating: UI'daki Index'e göre mantık kuruyoruz)
+            // Index 1: 4+, Index 2: 3+, Index 3: 2+
+            if (minRating == 1) query = query.Where(g => (g.AverageRating ?? 0) >= 4);
+            else if (minRating == 2) query = query.Where(g => (g.AverageRating ?? 0) >= 3);
+            else if (minRating == 3) query = query.Where(g => (g.AverageRating ?? 0) >= 2);
+
+            // 4. Fiyat Filtresi
+            // Index 1: Ücretsiz, Index 2: Ücretli
+            if (priceFilter == 1) query = query.Where(g => g.Price == 0);
+            else if (priceFilter == 2) query = query.Where(g => g.Price > 0);
+
+            // 5. Sıralama
+            switch (sortOrder)
+            {
+                case 1: query = query.OrderByDescending(g => g.ReleaseDate); break; // En Yeniler
+                case 2: query = query.OrderByDescending(g => g.AverageRating ?? 0); break; // Puanı Yüksek
+                case 3: query = query.OrderBy(g => g.Price); break; // Fiyatı Düşük
+                default: query = query.OrderBy(g => g.Title); break; // Varsayılan (A-Z)
+            }
+
+            // Sorguyu çalıştır ve listeyi döndür (SQL burada çalışır)
+            return await query.ToListAsync();
+        }
+        public async Task<List<string>> GetGenresAsync()
+        {
+            // SQL Karşılığı: SELECT DISTINCT Genre FROM Games ORDER BY Genre ASC
+            return await _context.Games
+                                 .Select(g => g.Genre) // Sadece Genre sütununu seç
+                                 .Distinct()           // Tekrar edenleri kaldır (Örn: 50 tane RPG varsa 1 tane al)
+                                 .OrderBy(g => g)      // Alfabetik sırala
+                                 .ToListAsync();
+        }
     }
 }
