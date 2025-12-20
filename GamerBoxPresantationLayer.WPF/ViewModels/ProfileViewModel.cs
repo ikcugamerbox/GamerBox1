@@ -1,15 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GamerBox.BusinessLayer.Abstract;
-using GamerBox.EntitiesLayer.Concrete;
 using GamerBoxPresantationLayer.WPF.Models;
 using GamerBoxPresantationLayer.WPF.Services;
-using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
+using GamerBoxPresantationLayer.WPF.Views.Windows;
 
 namespace GamerBoxPresantationLayer.WPF.ViewModels
 {
@@ -73,6 +69,7 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
                     {
                         UserPosts.Add(new PostDisplayModel
                         {
+                            Id = p.Id,
                             Content = p.Content,
                             DateStr = p.CreatedAt.ToString("dd MMM yyyy HH:mm"),
                             HashtagsStr = p.Hashtags != null ? string.Join(" ", p.Hashtags.Select(h => "#" + h)) : ""
@@ -180,6 +177,63 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
             catch (Exception ex)
             {
                 _dialogService.ShowMessage("Hata: " + ex.Message, "Hata");
+            }
+        }
+        [RelayCommand]
+        private async Task DeletePostAsync(PostDisplayModel postModel)
+        {
+            if (postModel == null) return;
+
+            bool confirm = _dialogService.ShowConfirmation("Bu gönderiyi silmek istediğinize emin misiniz?", "Sil");
+            if (confirm)
+            {
+                try
+                {
+                    var post = await _postService.GetByIdAsyncB(postModel.Id);
+                    if (post != null)
+                    {
+                        await _postService.DeleteAsyncB(post);
+                        UserPosts.Remove(postModel); // Listeden de kaldır
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _dialogService.ShowMessage($"Silme işlemi başarısız: {ex.Message}", "Hata");
+                }
+            }
+        }
+
+        [RelayCommand]
+        private async Task EditPostAsync(PostDisplayModel postModel)
+        {
+            if (postModel == null) return;
+
+            // Yeni pencereyi aç
+            var editWindow = new EditPostWindow(postModel.Content);
+            if (editWindow.ShowDialog() == true)
+            {
+                try
+                {
+                    string newContent = editWindow.UpdatedContent;
+
+                    // Veritabanından orijinal nesneyi çek
+                    var post = await _postService.GetByIdAsyncB(postModel.Id);
+                    if (post != null)
+                    {
+                        post.Content = newContent;
+
+                        await _postService.UpdateAsyncB(post);
+
+                        // Arayüzü güncelle
+                        postModel.Content = newContent;
+
+                     
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _dialogService.ShowMessage($"Güncelleme başarısız: {ex.Message}", "Hata");
+                }
             }
         }
 

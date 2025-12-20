@@ -100,7 +100,7 @@
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
                 <Setter Property="BorderThickness" Value="0,0,0,2"/>
                 <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
-                <Setter Property="Padding" Value="5"/>
+                <Setter Property="Padding" Value="5,0"/>
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
                         <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
@@ -115,7 +115,7 @@
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
                 <Setter Property="BorderThickness" Value="0,0,0,2"/>
                 <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
-                <Setter Property="Padding" Value="5"/>
+                <Setter Property="Padding" Value="5,0"/>
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
                         <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>

@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace GamerBoxPresantationLayer.WPF.Models
 {
-    public class PostDisplayModel
+    // 'partial' ve 'ObservableObject' eklemeyi unutma
+    public partial class PostDisplayModel : ObservableObject
     {
-        public string Content { get; set; }
+        public int Id { get; set; }
+
+        [ObservableProperty]
+        private string content;
         public string DateStr { get; set; }
         public string HashtagsStr { get; set; }
     }

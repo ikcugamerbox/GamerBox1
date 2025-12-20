@@ -123,16 +123,36 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Border Margin="0,0,0,10" BorderBrush="{DynamicResource BorderBrush}" 
-                                        BorderThickness="0,0,0,1" Padding="10">
-                                    <StackPanel>
-                                        <TextBlock Text="{Binding Content}" Foreground="{DynamicResource PrimaryTextBrush}" 
-                                                   FontSize="14" TextWrapping="Wrap"/>
-                                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                                            <TextBlock Text="{Binding DateStr}" Foreground="{DynamicResource MutedTextBrush}" FontSize="12"/>
-                                            <TextBlock Text=" • " Foreground="{DynamicResource MutedTextBrush}"/>
-                                            <TextBlock Text="{Binding HashtagsStr}" Foreground="{DynamicResource AccentBrush}" FontSize="12"/>
+                    BorderThickness="0,0,0,1" Padding="10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="{Binding Content}" Foreground="{DynamicResource PrimaryTextBrush}" 
+                                   FontSize="14" TextWrapping="Wrap"/>
+                                            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                                <TextBlock Text="{Binding DateStr}" Foreground="{DynamicResource MutedTextBrush}" FontSize="12"/>
+                                                <TextBlock Text=" • " Foreground="{DynamicResource MutedTextBrush}"/>
+                                                <TextBlock Text="{Binding HashtagsStr}" Foreground="{DynamicResource AccentBrush}" FontSize="12"/>
+                                            </StackPanel>
                                         </StackPanel>
-                                    </StackPanel>
+
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
+
+                                            <Button Style="{StaticResource MiniButtons}" Margin="0,0,5,0" ToolTip="Düzenle"
+                                                    Content="&#xE70F;"
+                                                    Command="{Binding DataContext.EditPostCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"/>
+    
+                                            <Button Style="{StaticResource MiniButtons}" ToolTip="Sil"
+                                                    Foreground="#FF5555" Content="&#xE74D;"
+                                                    Command="{Binding DataContext.DeletePostCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"/>
+                                        </StackPanel>
+                                    </Grid>
                                 </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

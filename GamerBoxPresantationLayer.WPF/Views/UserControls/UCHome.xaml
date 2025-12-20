@@ -3,30 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:GamerBoxPresantationLayer.WPF.Classes"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="900">
-
-    <!--<UserControl.Resources>
-        <Style TargetType="ComboBox">
-            <Setter Property="Padding" Value="5"/>
-            <Setter Property="Background" Value="{DynamicResource InputBackgroundBrush}"/>
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-
-            <Setter Property="ItemContainerStyle">
-                <Setter.Value>
-                    <Style TargetType="ComboBoxItem">
-                        <Setter Property="Background" Value="{DynamicResource PanelBackgroundBrush}"/>
-                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
-                        <Setter Property="BorderThickness" Value="0"/>
-                    </Style>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </UserControl.Resources>-->
+             d:DesignHeight="600" d:DesignWidth="1100">
 
     <Grid Background="{DynamicResource MainBackgroundBrush}">
         <Grid.RowDefinitions>
@@ -71,6 +49,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0" x:Name="FilterColumn"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="250"/>
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0" Background="{DynamicResource PanelBackgroundBrush}" 
@@ -115,7 +94,6 @@
                                 </Style>
                             </Button.Resources>
                         </Button>
-
                     </StackPanel>
                 </ScrollViewer>
             </Border>
@@ -129,7 +107,7 @@
                 <TextBlock Text="{Binding ResultCountText}" Foreground="{DynamicResource MutedTextBrush}" 
                            Margin="20,15,0,5" FontStyle="Italic"/>
 
-                <ScrollViewer Grid.Row="1" Margin="10,0,0,0">
+                <ScrollViewer Grid.Row="1" Margin="10,0,10,0">
                     <ItemsControl ItemsSource="{Binding FilteredGames}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -141,9 +119,42 @@
                             <DataTemplate>
                                 <Border Margin="10" Background="{DynamicResource CardBackgroundBrush}" 
                                         CornerRadius="10" Width="180">
+
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
+                                            <Setter Property="RenderTransform">
+                                                <Setter.Value>
+                                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Trigger.EnterActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.05" Duration="0:0:0.2"/>
+                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.05" Duration="0:0:0.2"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </Trigger.EnterActions>
+                                                    <Trigger.ExitActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1" Duration="0:0:0.2"/>
+                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1" Duration="0:0:0.2"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </Trigger.ExitActions>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+
                                     <Border.Effect>
                                         <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3"/>
                                     </Border.Effect>
+
                                     <StackPanel>
                                         <Image Source="{Binding Poster}" Height="240" Stretch="UniformToFill" ClipToBounds="True"/>
 
@@ -165,15 +176,14 @@
                                         </DockPanel>
 
                                         <DockPanel Margin="8,0,8,10">
-
                                             <Button DockPanel.Dock="Right" Content="+" Width="30" Height="30" 
-                                                        Margin="5,0,0,0"
-                                                        Background="{DynamicResource InputBackgroundBrush}" 
-                                                        Foreground="{DynamicResource AccentBrush}" 
-                                                        BorderThickness="0" 
-                                                        FontSize="20" FontWeight="Bold" Padding="0,0,0,2"
-                                                        ToolTip="Listeye Ekle"
-                                                        Tag="{Binding Id}" Click="btnAddToList_Click">
+                                                    Margin="5,0,0,0"
+                                                    Background="{DynamicResource InputBackgroundBrush}" 
+                                                    Foreground="{DynamicResource AccentBrush}" 
+                                                    BorderThickness="0" 
+                                                    FontSize="20" FontWeight="Bold" Padding="0,0,0,2"
+                                                    ToolTip="Listeye Ekle"
+                                                    Tag="{Binding Id}" Click="btnAddToList_Click">
                                                 <Button.Resources>
                                                     <Style TargetType="Border">
                                                         <Setter Property="CornerRadius" Value="5"/>
@@ -192,16 +202,69 @@
                                                     </Style>
                                                 </Button.Resources>
                                             </Button>
-
                                         </DockPanel>
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
-
                     </ItemsControl>
                 </ScrollViewer>
             </Grid>
+
+            <Border Grid.Column="2" Background="{DynamicResource PanelBackgroundBrush}" 
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1,0,0,0" Padding="15">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Margin="0,0,0,20">
+                        <TextBlock Text="EN İYİLER" Foreground="{DynamicResource AccentBrush}" 
+                                   FontSize="14" FontWeight="Bold"/>
+                        <TextBlock Text="Oyuncuların favorileri" Foreground="{DynamicResource MutedTextBrush}" 
+                                   FontSize="11"/>
+                    </StackPanel>
+
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden">
+                        <ItemsControl ItemsSource="{Binding TopRatedGames}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Margin="0,0,0,15" Background="Transparent" Cursor="Hand">
+                                        <DockPanel>
+                                            <Border Width="50" Height="70" CornerRadius="5" Margin="0,0,10,0">
+                                                <Border.Effect>
+                                                    <DropShadowEffect BlurRadius="5" ShadowDepth="2" Opacity="0.3"/>
+                                                </Border.Effect>
+                                                <Border.Background>
+                                                    <ImageBrush ImageSource="{Binding Poster}" Stretch="UniformToFill"/>
+                                                </Border.Background>
+                                            </Border>
+
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Title}" Foreground="{DynamicResource PrimaryTextBrush}" 
+                                                           FontWeight="SemiBold" FontSize="13" TextTrimming="CharacterEllipsis" MaxWidth="150"/>
+
+                                                <TextBlock Text="{Binding Genre}" Foreground="{DynamicResource MutedTextBrush}" 
+                                                           FontSize="11" Margin="0,2,0,5"/>
+
+                                                <Border Background="{DynamicResource InputBackgroundBrush}" 
+                                                        CornerRadius="3" Padding="5,2" HorizontalAlignment="Left">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="⭐" FontSize="10" Margin="0,0,3,0"/>
+                                                        <TextBlock Text="{Binding Rating}" Foreground="{DynamicResource AccentBrush}" 
+                                                                   FontWeight="Bold" FontSize="11"/>
+                                                    </StackPanel>
+                                                </Border>
+                                            </StackPanel>
+                                        </DockPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
         </Grid>
     </Grid>
 </UserControl>

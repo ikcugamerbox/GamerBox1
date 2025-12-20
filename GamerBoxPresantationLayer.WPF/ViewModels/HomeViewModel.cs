@@ -14,6 +14,7 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
     public partial class HomeViewModel : ObservableObject
     {
         private readonly IGameService _gameService;
+        private readonly IPostService _postService;
 
 
         // --- Özellikler (Properties) ---
@@ -30,11 +31,14 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
         // ComboBox ve ListBox kaynakları
         public ObservableCollection<string> GenreList { get; } = new ObservableCollection<string>();
         public ObservableCollection<GameDisplayModel> FilteredGames { get; } = new ObservableCollection<GameDisplayModel>();
+        public ObservableCollection<GameDisplayModel> TopRatedGames { get; } = new ObservableCollection<GameDisplayModel>();
+
 
         // Constructor Injection ile servisi alıyoruz
-        public HomeViewModel(IGameService gameService)
+        public HomeViewModel(IGameService gameService, IPostService postService)
         {
             _gameService = gameService;
+            _postService = postService;
         }
 
         // Sayfa yüklendiğinde çalışacak komut
@@ -59,6 +63,7 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
 
             // 2. OYUNLARI VERİTABANINDAN FİLTRELEYEREK ÇEK
             await ApplyFilters();
+            await LoadTopRatedGames();
         }
 
         // Property'ler her değiştiğinde filtrelemeyi otomatik tetikle
@@ -67,6 +72,28 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
         partial void OnSelectedRatingIndexChanged(int value) => _ = ApplyFilters();
         partial void OnSelectedPriceIndexChanged(int value) => _ = ApplyFilters();
         partial void OnSelectedSortIndexChanged(int value) => _ = ApplyFilters();
+
+
+        private async Task LoadTopRatedGames()
+        {
+           
+            var topGames = await _gameService.GetFilteredGamesAsyncB("", "Tümü", 0, 0, 2);
+
+            TopRatedGames.Clear();
+
+            // İlk 5 oyunu al
+            foreach (var g in topGames.Take(5))
+            {
+                TopRatedGames.Add(new GameDisplayModel
+                {
+                    Id = g.Id,
+                    Title = g.Title,
+                    Genre = g.Genre,
+                    Poster = string.IsNullOrEmpty(g.ImageUrl) ? "/Resources/treasure-chest.png" : g.ImageUrl,
+                    Rating = g.AverageRating.HasValue ? g.AverageRating.Value.ToString("0.0") : "N/A"
+                });
+            }
+        }
 
         [RelayCommand]
         private async Task ApplyFilters()
