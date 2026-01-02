@@ -15,6 +15,7 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
         [ObservableProperty]
         private string email;
 
+
         // Pencerenin kapatılması veya Login başarısı için event
         public event Action<User> OnLoginSuccess;
         public event Action<string> OnLoginFailed;

@@ -1,85 +1,79 @@
-﻿using GamerBox.BusinessLayer.Abstract;
-using GamerBox.EntitiesLayer.Concrete;
+﻿using GamerBoxPresantationLayer.WPF.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace GamerBoxPresantationLayer.WPF
 {
     public partial class SignUpWindow : Window
     {
-        private readonly IUserService _userService;
+        public SignUpViewModel ViewModel { get; }
 
-        public SignUpWindow(IUserService userService)
+        public SignUpWindow(SignUpViewModel viewModel)
         {
             InitializeComponent();
-            _userService = userService;
+            ViewModel = viewModel;
+            this.DataContext = ViewModel;
+
+            ViewModel.RequestClose += () => this.Close();
+           
+            ViewModel.GoToSignInAction += OpenSignInWindow;
         }
 
         private async void Register_Click(object sender, RoutedEventArgs e)
         {
-            // 1. Validasyon Kontrolleri
-            if (txtPass.Password != txtPassConfirm.Password)
+          
+            var passwordBoxes = new object[] { txtPass, txtPassConfirm };
+ 
+            if (ViewModel.RegisterCommand.CanExecute(passwordBoxes))
             {
-                CustomMessageBox.Show("Şifreler uyuşmuyor!", "Hata");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(txtUsername.Text) || string.IsNullOrWhiteSpace(txtEmail.Text) || string.IsNullOrWhiteSpace(txtPass.Password))
-            {
-                CustomMessageBox.Show("Lütfen tüm zorunlu alanları doldurun.", "Uyarı");
-                return;
-            }
-
-            try
-            {
-                // 2. Kullanıcı Nesnesini Oluşturma
-                var user = new User
-                {
-                    Username = txtUsername.Text.Trim(),
-                    Email = txtEmail.Text.Trim(),
-                    Bio = txtName.Text.Trim(), // Entity'de Ad Soyad olmadığı için Bio'ya atadık
-                    ThemePreference = "dark" // Varsayılan tema
-                };
-
-                // 3. Kayıt İşlemi (Business Layer)
-                await _userService.RegisterAsyncB(user, txtPass.Password);
-
-                CustomMessageBox.Show("Kayıt başarılı! Şimdi giriş yapabilirsiniz.", "Başarılı");
-
-                // 4. Giriş Ekranına Yönlendirme
-                GoToSignIn();
-            }
-            catch (Exception ex)
-            {
-                CustomMessageBox.Show(ex.Message, "Kayıt Hatası");
+                await ViewModel.RegisterCommand.ExecuteAsync(passwordBoxes);
             }
         }
 
         private void GoSignIn_Click(object sender, RoutedEventArgs e)
         {
-            GoToSignIn();
+            OpenSignInWindow();
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
-            // Eğer bir ana pencere tarafından açıldıysa onun opaklığını düzelt
-            if (this.Owner != null)
-                this.Owner.Opacity = 1;
+            if (this.Owner != null) this.Owner.Opacity = 1;
         }
 
-        //  Giriş Ekranına Dönüş
-        private void GoToSignIn()
+        // Giriş Ekranını Açan Yardımcı Metot
+        private void OpenSignInWindow()
         {
             var signIn = App.ServiceProvider.GetRequiredService<SignInWindow>();
 
-            // Eğer bu pencerenin sahibi varsa (MainWindow), yeni açılan login penceresinin de sahibi yap
             if (this.Owner != null)
                 signIn.Owner = this.Owner;
 
             this.Close();
             signIn.ShowDialog();
+        }
+        private void txtEmail_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                txtPass.Focus();
+                e.Handled = true;
+            }
+        }
+
+        // Şifre kutusunda Enter'a basınca giriş yap
+        private async void txtPass_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                
+                if (ViewModel.RegisterCommand.CanExecute(txtPass))
+                {
+                    await ViewModel.RegisterCommand.ExecuteAsync(txtPass);
+                }
+            }
         }
     }
 }

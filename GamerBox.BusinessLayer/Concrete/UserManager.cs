@@ -57,24 +57,21 @@ namespace GamerBox.BusinessLayer.Concrete
             user.PasswordHash = HashPassword(plainPassword);
             user.CreatedAtUtc = DateTime.UtcNow;
 
-            // GenericRepository'deki Insert veya Add çağrılabilir, 
-            // ama burada _userDal.Add'i direkt çağırıyoruz (bizim yasakladığımız UserManager.Add değil, DAL.Add)
             await _userDal.AddAsync(user);
         }
 
         public async Task<User> LoginAsyncB(string userEmail, string password)
         {
+           
             if (!IsValidEmail(userEmail))
-                throw new InvalidOperationException("Invalid email format.");
+                throw new InvalidOperationException("Invalid email format .");
 
             // Kullanıcıyı bul
             var user = await _userDal.GetUserByEmailAsync(userEmail);
+            bool isPasswordVerified = (user != null) && VerifyPassword(password, user.PasswordHash);
 
-            if (user == null)
-                throw new InvalidOperationException("User not found.");
-
-            if (!VerifyPassword(password, user.PasswordHash))
-                throw new InvalidOperationException("Incorrect password.");
+            if (!isPasswordVerified)
+                throw new InvalidOperationException("The email address or password is incorrect.");
 
             user.LastLoginUtc = DateTime.UtcNow;
             await _userDal.UpdateAsync(user);

@@ -86,7 +86,9 @@ namespace GamerBox.BusinessLayer.Concrete
             var preferredCategories = await _userDal.GetFavoriteGenresAsync(userId);
 
             if (preferredCategories == null || !preferredCategories.Any())
-                throw new InvalidOperationException("You must select a category before getting recommendations.");
+            {
+                return await _gameDal.GetByRatingAsync(count);
+            }
 
             // Kategoriye göre filtreleme
             //return await _gameDal.GetAllAsync() // GetAllGames() yerine GetAll() kullanabiliriz, IGenericDal'dan gelir.
