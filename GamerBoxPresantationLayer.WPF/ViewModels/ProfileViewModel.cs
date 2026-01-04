@@ -236,6 +236,51 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
                 }
             }
         }
+        // Takipçileri Göster
+        [RelayCommand]
+        private async Task ShowFollowersAsync()
+        {
+            if (_currentUserId == 0) return;
+
+            // Service'den veriyi çek
+            var followers = await _userService.GetFollowersAsyncB(_currentUserId);
+
+            // DisplayModel'e çevir
+            var displayList = followers.Select(u => new UserDisplayModel
+            {
+                Id = u.Id,
+                Username = u.Username,
+                Bio = u.Bio,
+                ProfilePictureUrl = u.ProfilePictureUrl
+            }).ToList();
+
+            // ViewModel oluştur ve Pencereyi Aç
+            var vm = new UserListViewModel("Takipçiler", displayList);
+            var window = new UserListWindow(vm);
+            window.ShowDialog();
+        }
+
+        // Takip Edilenleri Göster
+        [RelayCommand]
+        private async Task ShowFollowingAsync()
+        {
+            if (_currentUserId == 0) return;
+
+            // Service'den veriyi çek (GetFollowedUsersAsyncB zaten IUserService'de vardı)
+            var following = await _userService.GetFollowedUsersAsyncB(_currentUserId);
+
+            var displayList = following.Select(u => new UserDisplayModel
+            {
+                Id = u.Id,
+                Username = u.Username,
+                Bio = u.Bio,
+                ProfilePictureUrl = u.ProfilePictureUrl
+            }).ToList();
+
+            var vm = new UserListViewModel("Takip Edilenler", displayList);
+            var window = new UserListWindow(vm);
+            window.ShowDialog();
+        }
 
     }
 }

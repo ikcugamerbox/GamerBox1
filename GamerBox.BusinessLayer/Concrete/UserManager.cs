@@ -166,5 +166,26 @@ namespace GamerBox.BusinessLayer.Concrete
                    Regex.IsMatch(password, "[0-9]") &&
                    Regex.IsMatch(password, @"[\W_]");
         }
+        public async Task UnfollowAsyncB(int followerId, int targetUserId)
+        {
+            // Await kullanmadan çağırıyoruz çünkü DAL metodu void
+            _userDal.Unfollow(followerId, targetUserId);
+
+            // Asenkron bir işlem gibi davranması için (Task dönmesi için)
+            await Task.CompletedTask;
+        }
+        public async Task<List<User>> GetFollowersAsyncB(int userId)
+        {
+            // DAL'dan beni takip edenleri getir
+            return await _userDal.GetFollowersAsync(userId);
+        }
+        public async Task<bool> IsFollowingAsyncB(int followerId, int targetUserId)
+        {
+            return await _userDal.IsFollowingAsync(followerId, targetUserId);
+        }
+        public async Task<User> GetUserByUsernameAsyncB(string username)
+        {
+            return await _userDal.GetUserByUsernameAsync(username);
+        }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using GamerBox.BusinessLayer.Abstract;
+using GamerBoxPresantationLayer.WPF.Messages;
 using GamerBoxPresantationLayer.WPF.Models;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using System.Collections.ObjectModel;
@@ -139,6 +141,12 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
             SelectedPriceIndex = 0;
             SelectedSortIndex = 0;
             ApplyFilters(); // Properties değişince zaten tetiklenir ama garanti olsun
+        }
+        [RelayCommand]
+        private void GoToUserProfile(int userId)
+        {
+            // Artık Messages klasöründeki sınıfı kullanıyor
+            WeakReferenceMessenger.Default.Send(new OpenProfileMessage(userId));
         }
     }
 }

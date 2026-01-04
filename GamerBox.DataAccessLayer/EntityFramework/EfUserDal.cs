@@ -100,5 +100,29 @@ namespace GamerBox.DataAccessLayer.EntityFramework
         {
             return await GetFollowingAsync(userId);
         }
+        public void Unfollow(int followerId, int targetUserId)
+        {
+            // Takip edeni, takip ettikleri listesiyle (Following) birlikte çekiyoruz
+            var follower = _context.Users
+                .Include(u => u.Following)
+                .FirstOrDefault(u => u.Id == followerId);
+
+            if (follower == null) return;
+
+            // Listede hedef kullanıcı var mı kontrol et
+            var targetUser = follower.Following.FirstOrDefault(u => u.Id == targetUserId);
+
+            // Varsa listeden kaldır ve kaydet
+            if (targetUser != null)
+            {
+                follower.Following.Remove(targetUser);
+                _context.SaveChanges();
+            }
+        }
+        public async Task<User> GetUserByUsernameAsync(string username)
+        {
+            // Kullanıcı adını (büyük/küçük harf duyarsız olabilir veritabanı ayarına göre) arıyoruz
+            return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        }
     }
 }

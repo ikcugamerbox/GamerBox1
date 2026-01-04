@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using GamerBox.BusinessLayer.Abstract;
+using GamerBoxPresantationLayer.WPF.Messages;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,6 +22,15 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
             _postService = postService;
             _userService = userService;
             _gameService = gameService;
+        
+        }
+        [RelayCommand]
+        private void GoToUserProfile(int userId)
+        {
+            if (userId > 0)
+            {
+                WeakReferenceMessenger.Default.Send(new OpenProfileMessage(userId));
+            }
         }
 
         [RelayCommand]

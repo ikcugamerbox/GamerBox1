@@ -11,5 +11,6 @@ namespace GamerBoxPresantationLayer.WPF.Models
         private string content;
         public string DateStr { get; set; }
         public string HashtagsStr { get; set; }
+
     }
 }

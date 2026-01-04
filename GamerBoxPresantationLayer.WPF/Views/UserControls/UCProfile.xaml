@@ -96,12 +96,21 @@
                                Foreground="{DynamicResource PrimaryTextBrush}" Margin="0,10,0,0" TextWrapping="Wrap"/>
 
                     <StackPanel Orientation="Horizontal" Margin="0,15,0,0">
-                        <TextBlock Text="Takipçi: " Foreground="{DynamicResource MutedTextBrush}"/>
-                        <TextBlock Text="{Binding FollowersCount}" Foreground="{DynamicResource PrimaryTextBrush}" 
-                                   FontWeight="Bold" Margin="0,0,15,0"/>
+                        <Button Command="{Binding ShowFollowersCommand}" 
+        Background="Transparent" BorderThickness="0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding FollowersCount}" FontWeight="Bold" Foreground="White"/>
+                                <TextBlock Text=" Takipçi" Foreground="Gray" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </Button>
 
-                        <TextBlock Text="Takip: " Foreground="{DynamicResource MutedTextBrush}"/>
-                        <TextBlock Text="{Binding FollowingCount}" Foreground="{DynamicResource PrimaryTextBrush}" FontWeight="Bold"/>
+                        <Button Command="{Binding ShowFollowingCommand}" 
+        Background="Transparent" BorderThickness="0" Margin="15,0,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding FollowingCount}" FontWeight="Bold" Foreground="White"/>
+                                <TextBlock Text=" Takip" Foreground="Gray" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </StackPanel>
             </DockPanel>

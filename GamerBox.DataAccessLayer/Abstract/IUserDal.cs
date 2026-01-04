@@ -12,8 +12,10 @@ namespace GamerBox.DataAccessLayer.Abstract
         Task<Game> GetGameByIdAsync(int gameId);
         Task<bool> IsFollowingAsync(int followerId, int targetUserId);
         void Follow(int followerId, int targetUserId);
+        void Unfollow(int followerId, int targetUserId);
         Task<List<User>> GetFollowedUsersAsync(int userId);
         Task<List<Game>> GetUserGamesAsync(int userId);
+        Task<User> GetUserByUsernameAsync(string username);
 
 
     }
