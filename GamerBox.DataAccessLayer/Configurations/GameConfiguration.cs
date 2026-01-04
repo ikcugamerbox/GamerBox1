@@ -11,6 +11,7 @@ public class GameConfiguration : IEntityTypeConfiguration<Game>
         builder.Property(x => x.Title)
                .IsRequired()
                .HasMaxLength(100);
+        builder.HasIndex(x => x.Title);
 
         builder.Property(x => x.Description)
                .HasMaxLength(500);
@@ -18,6 +19,7 @@ public class GameConfiguration : IEntityTypeConfiguration<Game>
         builder.Property(x => x.Genre)
                .IsRequired()
                .HasMaxLength(50);
+        builder.HasIndex(x => x.Genre);
 
         builder.Property(x => x.ReleaseDate)
                .IsRequired();

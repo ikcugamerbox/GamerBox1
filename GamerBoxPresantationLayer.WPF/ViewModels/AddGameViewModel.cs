@@ -16,6 +16,7 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
         private readonly IGameService _gameService;
         private int _userId;
         private readonly IDialogService _dialogService;
+        private const long MaxFileSize = 5 * 1024 * 1024;
 
         // Pencereyi kapatmak için bir olay (Action) tanımlıyoruz
         public Action RequestClose { get; set; }
@@ -24,7 +25,7 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
         [ObservableProperty] private string title;
         [ObservableProperty] private string genre;
         [ObservableProperty] private string description;
-        [ObservableProperty] private string priceText = "0"; // TextBox'tan string gelir
+        [ObservableProperty] private string priceText; // TextBox'tan string gelir
         [ObservableProperty] private string imageUrl = "/Resources/treasure-chest.png"; // Varsayılan resim
         [ObservableProperty] private string selectedImagePath; // Dosya yolunu tutar
 
@@ -48,6 +49,14 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
 
             if (fileName != null)
             {
+                var fileInfo = new FileInfo(fileName);
+
+                if (fileInfo.Length > MaxFileSize)
+                {
+                    _dialogService.ShowMessage("Seçtiğiniz resim çok büyük! Lütfen 5 MB'dan küçük bir resim seçin.", "Hata");
+                    return;
+                }
+
                 SelectedImagePath = fileName;
                 ImageUrl = fileName;
             }
@@ -64,7 +73,17 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
                     _dialogService.ShowMessage("Lütfen oyun adı ve türünü giriniz.", "Eksik Bilgi");
                     return;
                 }
+                if (!decimal.TryParse(PriceText, out decimal price))
+                {
+                    _dialogService.ShowMessage("Lütfen geçerli bir fiyat giriniz (Sadece sayı).", "Hata");
+                    return;
+                }
 
+                if (price < 0)
+                {
+                    _dialogService.ShowMessage("Fiyat negatif olamaz.", "Hata");
+                    return;
+                }
                 // 1. Resmi Kopyala (Varsa)
                 string finalImagePath = "/Resources/treasure-chest.png";
                 if (!string.IsNullOrEmpty(SelectedImagePath) && File.Exists(SelectedImagePath))
@@ -81,7 +100,6 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
                 }
 
                 // 2. Oyunu Oluştur
-                decimal.TryParse(PriceText, out decimal price);
 
                 var game = new Game
                 {
@@ -104,7 +122,7 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
             }
             catch (Exception ex)
             {
-                _dialogService.ShowMessage("Hata: " + ex.Message, "Hata");
+                _dialogService.ShowMessage("Oyun eklenirken bir hata oluştu: " + ex.Message, "Hata");
             }
         }
     }

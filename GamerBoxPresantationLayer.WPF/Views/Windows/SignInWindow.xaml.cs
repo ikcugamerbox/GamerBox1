@@ -16,37 +16,35 @@ namespace GamerBoxPresantationLayer.WPF
             ViewModel = viewModel;
             this.DataContext = ViewModel;
 
-            // ViewModel eventlerini dinle
+            // ViewModel eventlerini dinle (Hata mesajları artık Business katmanından filtrelenmiş geliyor)
             ViewModel.OnLoginSuccess += HandleLoginSuccess;
-            ViewModel.OnLoginFailed += (msg) => CustomMessageBox.Show(msg, "Hata");
+            ViewModel.OnLoginFailed += (msg) => CustomMessageBox.Show(msg, "Giriş Hatası");
         }
 
         private void HandleLoginSuccess(User user)
         {
             CustomMessageBox.Show($"Hoşgeldin, {user.Username}!", "Giriş Başarılı");
 
+            // MainWindow'u güncelle
             if (this.Owner is MainWindow mainWindow)
             {
                 mainWindow.IsLoggedIn = true;
                 mainWindow.UserName = user.Username;
                 mainWindow.CurrentUser = user;
-                // UI güncellemesini tetikle
-                mainWindow.DataContext = null;
+                mainWindow.DataContext = null;//:)
                 mainWindow.DataContext = mainWindow;
+
                 mainWindow.Opacity = 1;
             }
             this.Close();
         }
 
-        // Pencere kapatma vb. görsel işlemler burada kalabilir
         private void btnCloseClick(object sender, RoutedEventArgs e)
         {
             this.Close();
             if (this.Owner != null) this.Owner.Opacity = 1;
         }
 
-        // SignUp penceresine geçiş UI işlemidir, 
- 
         private void SignUp_Click(object sender, MouseButtonEventArgs e)
         {
             var signUp = App.ServiceProvider.GetRequiredService<SignUpWindow>();
@@ -55,15 +53,26 @@ namespace GamerBoxPresantationLayer.WPF
             signUp.ShowDialog();
         }
 
-        // SignInWindow.xaml.cs içine eklenecek metod:
-
+        // Enter tuşu desteği
         private void txtEmail_KeyDown(object sender, KeyEventArgs e)
         {
-            // Enter tuşuna basıldığında odağı şifre kutusuna (txtPass) kaydır
             if (e.Key == Key.Enter)
             {
                 txtPass.Focus();
                 e.Handled = true;
+            }
+        }
+
+        // Şifre kutusunda Enter'a basınca giriş yap
+        private async void txtPass_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                // Login Command'ini çalıştır
+                if (ViewModel.LoginCommand.CanExecute(txtPass))
+                {
+                    await ViewModel.LoginCommand.ExecuteAsync(txtPass);
+                }
             }
         }
     }

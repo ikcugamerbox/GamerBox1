@@ -17,6 +17,7 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
         [ObservableProperty] private string fullName; // Bio yerine kullanıyoruz
         [ObservableProperty] private string username;
         [ObservableProperty] private string email;
+        [ObservableProperty] private string selectedTheme = "dark";
 
         public Action GoToSignInAction { get; set; }
         public Action RequestClose { get; set; }
@@ -59,7 +60,7 @@ namespace GamerBoxPresantationLayer.WPF.ViewModels
                     Username = Username,
                     Email = Email,
                     Bio = FullName ?? "",
-                    ThemePreference = "dark"
+                    ThemePreference = SelectedTheme
                 };
 
                 await _userService.RegisterAsyncB(user, password);

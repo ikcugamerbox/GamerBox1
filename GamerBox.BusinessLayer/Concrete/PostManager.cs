@@ -30,7 +30,19 @@ namespace GamerBox.BusinessLayer.Concrete
 
         public async Task UpdateAsyncB(Post entity)
         {
+            // 1. İçerik kontrolü
             ValidatePostContent(entity.Content);
+
+            // 2. Yeni metindeki hashtag'leri string listesi olarak çıkar (Örn: "fps", "rpg")
+            var tagStrings = ExtractHashtags(entity.Content);
+
+            // 3. Bu stringleri gerçek Hashtag nesnelerine çevir (Veritabanında varsa getir, yoksa oluştur
+            var hashtagEntities = await _hashtagService.GetOrCreateHashtagsAsyncB(tagStrings);
+
+            // 4. Post nesnesinin etiket listesini güncelle
+            entity.Hashtags = hashtagEntities;
+
+            // 5. Veritabanını güncelle
             await _postDal.UpdateAsync(entity);
         }
 

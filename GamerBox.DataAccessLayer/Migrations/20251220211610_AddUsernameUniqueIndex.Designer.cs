@@ -4,6 +4,7 @@ using GamerBox.DataAccessLayer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamerBox.DataAccessLayer.Migrations
 {
     [DbContext(typeof(GamerBoxContext))]
-    partial class GamerBoxContextModelSnapshot : ModelSnapshot
+    [Migration("20251220211610_AddUsernameUniqueIndex")]
+    partial class AddUsernameUniqueIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,10 +81,6 @@ namespace GamerBox.DataAccessLayer.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Genre");
-
-                    b.HasIndex("Title");
 
                     b.HasIndex("UserId");
 
